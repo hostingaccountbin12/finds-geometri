@@ -7,22 +7,22 @@ import { Check, X } from 'lucide-react';
 import { Playpen_Sans } from "next/font/google";
 import { useGameState } from "@/context/GameContext";
 
-import BolaBasket from "@/assets/icons/mini-games/mini-games-2/BolaBasket.png"
-import Ceri from "@/assets/icons/mini-games/mini-games-2/Ceri.webp"
-import Cermin from "@/assets/icons/mini-games/mini-games-2/Cermin.webp"
-import Kacamata from "@/assets/icons/mini-games/mini-games-2/Kacamata.webp"
-import Kardus from "@/assets/icons/mini-games/mini-games-2/Kardus.webp"
-import Laptop from "@/assets/icons/mini-games/mini-games-2/Laptop.webp"
-import Onigiri from "@/assets/icons/mini-games/mini-games-2/Onigiri.webp"
-import Penggaris from "@/assets/icons/mini-games/mini-games-2/Penggaris.webp"
-import Penghapus from "@/assets/icons/mini-games/mini-games-2/Penghapus.webp"
-import Rubik from "@/assets/icons/mini-games/mini-games-2/Rubik.webp"
+import Bantal from "@/assets/icons/mini-games/mini-games-4/Bantal.webp"
+import Bintang from "@/assets/icons/mini-games/mini-games-4/Bintang.webp"
+import Bola from "@/assets/icons/mini-games/mini-games-4/Bola.webp"
+import Guling from "@/assets/icons/mini-games/mini-games-4/Guling.webp"
+import HiasanDinding from "@/assets/icons/mini-games/mini-games-4/HiasanDinding.webp"
+import Kasur from "@/assets/icons/mini-games/mini-games-4/Kasur.webp"
+import Kelereng from "@/assets/icons/mini-games/mini-games-4/Kelereng.webp"
+import LayangLayang from "@/assets/icons/mini-games/mini-games-4/LayangLayang.webp"
+import Popit from "@/assets/icons/mini-games/mini-games-4/Popit.webp"
+import Telur from "@/assets/icons/mini-games/mini-games-4/Telur.webp"
 
 // Interface untuk item game
 interface GameItem {
     id: number;
     name: string;
-    shape: 'triangle' | 'circle' | 'rectangle' | 'cylinder' | 'trapezoid' | 'oval' | 'love' | 'square'
+    shape: 'triangle' | 'circle' | 'rectangle' | 'cylinder' | 'trapezoid' | 'oval' | 'love' | 'square' | 'star'
     icon: any;
     selected: boolean;
     matched: boolean;
@@ -33,21 +33,21 @@ type FeedbackType = 'correct' | 'wrong' | null;
 
 const playpen = Playpen_Sans({ subsets: ["latin"], weight: "700" });
 
-export default function MiniGames2(): JSX.Element {
+export default function MiniGames4(): JSX.Element {
     const { navigateTo, updateLevelMiniGames } = useGameState();
 
     // Data game items dengan icon dan nama yang sesuai import
     const gameItems: GameItem[] = [
-        { id: 1, name: 'Kacamata', shape: 'love', icon: Kacamata, selected: false, matched: false },
-        { id: 2, name: 'Ceri', shape: 'circle', icon: Ceri, selected: false, matched: false },
-        { id: 3, name: 'Penghapus', shape: 'rectangle', icon: Penghapus, selected: false, matched: false },
-        { id: 4, name: 'Rubik', shape: 'square', icon: Rubik, selected: false, matched: false },
-        { id: 5, name: 'Cermin', shape: 'love', icon: Cermin, selected: false, matched: false },
-        { id: 6, name: 'Kardus', shape: 'square', icon: Kardus, selected: false, matched: false },
-        { id: 7, name: 'Penggaris', shape: 'oval', icon: Penggaris, selected: false, matched: false },
-        { id: 8, name: 'Bola Basket', shape: 'circle', icon: BolaBasket, selected: false, matched: false },
-        { id: 9, name: 'Onigiri', shape: 'oval', icon: Onigiri, selected: false, matched: false },
-        { id: 10, name: 'Laptop', shape: 'rectangle', icon: Laptop, selected: false, matched: false }
+        { id: 1, name: 'Bintang', shape: 'star', icon: Bintang, selected: false, matched: false },
+        { id: 2, name: 'Kasur', shape: 'square', icon: Kasur, selected: false, matched: false },
+        { id: 3, name: 'Pop It', shape: 'star', icon: Popit, selected: false, matched: false },
+        { id: 4, name: 'Telur', shape: 'oval', icon: Telur, selected: false, matched: false },
+        { id: 5, name: 'Bantal', shape: 'square', icon: Bantal, selected: false, matched: false },
+        { id: 6, name: 'Hiasan Dinding', shape: 'triangle', icon: HiasanDinding, selected: false, matched: false },
+        { id: 7, name: 'Guling', shape: 'oval', icon: Guling, selected: false, matched: false },
+        { id: 8, name: 'Layang Layang', shape: 'triangle', icon: LayangLayang, selected: false, matched: false },
+        { id: 9, name: 'Bola', shape: 'circle', icon: Bola, selected: false, matched: false },
+        { id: 10, name: 'Kelereng', shape: 'circle', icon: Kelereng, selected: false, matched: false }
     ];
 
     // State management dengan proper typing
@@ -61,10 +61,12 @@ export default function MiniGames2(): JSX.Element {
         const allMatched = items.every(item => item.matched);
         if (allMatched && items.length > 0) {
             setGameComplete(true);
-            updateLevelMiniGames(3);
+            // Update level mini games ke 2
+            updateLevelMiniGames(5);
 
+            // Auto navigate to mini-games-2 after 3 seconds
             const timer = setTimeout(() => {
-                navigateTo("mini-games-3");
+                navigateTo("mini-games-5");
             }, 3000);
 
             return () => clearTimeout(timer);

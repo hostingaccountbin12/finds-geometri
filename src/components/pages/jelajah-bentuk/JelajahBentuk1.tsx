@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Home from "@/assets/icons/Home.webp"
 import { useGameState } from "@/context/GameContext";
@@ -47,6 +47,7 @@ export default function JelajahBentuk1() {
     const currentGame = gameData[currentLevel];
 
     const handleBackToMenu = () => {
+        console.log("tes", selectedObjects)
         navigateTo("menu-game");
     };
 

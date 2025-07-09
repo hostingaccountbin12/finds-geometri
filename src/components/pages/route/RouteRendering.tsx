@@ -22,6 +22,9 @@ import MontirKecil3 from "../montir-kecil/MontirKecil3";
 import MontirKecil4 from "../montir-kecil/MontirKecil4";
 import MontirKecil5 from "../montir-kecil/MontirKecil5";
 import MiniGames2 from "../mini-games/MiniGames2";
+import MiniGames3 from "../mini-games/MiniGames3";
+import MiniGames4 from "../mini-games/MiniGames4";
+import MiniGames5 from "../mini-games/MiniGames5";
 // Import other game screens as needed
 
 export default function BankKidsApp() {
@@ -63,6 +66,12 @@ export default function BankKidsApp() {
             return <MiniGames1 />;
         case 'mini-games-2':
             return <MiniGames2 />;
+        case 'mini-games-3':
+            return <MiniGames3 />;
+        case 'mini-games-4':
+            return <MiniGames4 />;
+        case 'mini-games-5':
+            return <MiniGames5 />;
         case 'jelajah-bentuk-1':
             return <JelajahBentuk1 />;
         case 'petunjuk-bermain-1':

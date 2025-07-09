@@ -7,16 +7,16 @@ import { Check, X } from 'lucide-react';
 import { Playpen_Sans } from "next/font/google";
 import { useGameState } from "@/context/GameContext";
 
-import BolaBasket from "@/assets/icons/mini-games/mini-games-2/BolaBasket.png"
-import Ceri from "@/assets/icons/mini-games/mini-games-2/Ceri.webp"
-import Cermin from "@/assets/icons/mini-games/mini-games-2/Cermin.webp"
-import Kacamata from "@/assets/icons/mini-games/mini-games-2/Kacamata.webp"
-import Kardus from "@/assets/icons/mini-games/mini-games-2/Kardus.webp"
-import Laptop from "@/assets/icons/mini-games/mini-games-2/Laptop.webp"
-import Onigiri from "@/assets/icons/mini-games/mini-games-2/Onigiri.webp"
-import Penggaris from "@/assets/icons/mini-games/mini-games-2/Penggaris.webp"
-import Penghapus from "@/assets/icons/mini-games/mini-games-2/Penghapus.webp"
-import Rubik from "@/assets/icons/mini-games/mini-games-2/Rubik.webp"
+import Balon from "@/assets/icons/mini-games/mini-games-3/Balon.webp"
+import Globe from "@/assets/icons/mini-games/mini-games-3/Globe.webp"
+import Kaleng from "@/assets/icons/mini-games/mini-games-3/Kaleng.webp"
+import Koper from "@/assets/icons/mini-games/mini-games-3/Koper.webp"
+import Kue from "@/assets/icons/mini-games/mini-games-3/Kue.webp"
+import Mainan from "@/assets/icons/mini-games/mini-games-3/Mainan.webp"
+import Sepatu from "@/assets/icons/mini-games/mini-games-3/Sepatu.webp"
+import Tas from "@/assets/icons/mini-games/mini-games-3/Tas.webp"
+import TempatPensil from "@/assets/icons/mini-games/mini-games-3/TempatPensil.webp"
+import Toples from "@/assets/icons/mini-games/mini-games-3/Toples.webp"
 
 // Interface untuk item game
 interface GameItem {
@@ -33,21 +33,21 @@ type FeedbackType = 'correct' | 'wrong' | null;
 
 const playpen = Playpen_Sans({ subsets: ["latin"], weight: "700" });
 
-export default function MiniGames2(): JSX.Element {
+export default function MiniGames3(): JSX.Element {
     const { navigateTo, updateLevelMiniGames } = useGameState();
 
     // Data game items dengan icon dan nama yang sesuai import
     const gameItems: GameItem[] = [
-        { id: 1, name: 'Kacamata', shape: 'love', icon: Kacamata, selected: false, matched: false },
-        { id: 2, name: 'Ceri', shape: 'circle', icon: Ceri, selected: false, matched: false },
-        { id: 3, name: 'Penghapus', shape: 'rectangle', icon: Penghapus, selected: false, matched: false },
-        { id: 4, name: 'Rubik', shape: 'square', icon: Rubik, selected: false, matched: false },
-        { id: 5, name: 'Cermin', shape: 'love', icon: Cermin, selected: false, matched: false },
-        { id: 6, name: 'Kardus', shape: 'square', icon: Kardus, selected: false, matched: false },
-        { id: 7, name: 'Penggaris', shape: 'oval', icon: Penggaris, selected: false, matched: false },
-        { id: 8, name: 'Bola Basket', shape: 'circle', icon: BolaBasket, selected: false, matched: false },
-        { id: 9, name: 'Onigiri', shape: 'oval', icon: Onigiri, selected: false, matched: false },
-        { id: 10, name: 'Laptop', shape: 'rectangle', icon: Laptop, selected: false, matched: false }
+        { id: 1, name: 'Tempat Pensil', shape: 'oval', icon: TempatPensil, selected: false, matched: false },
+        { id: 2, name: 'Kue', shape: 'triangle', icon: Kue, selected: false, matched: false },
+        { id: 3, name: 'Koper', shape: 'rectangle', icon: Koper, selected: false, matched: false },
+        { id: 4, name: 'Sepatu', shape: 'circle', icon: Sepatu, selected: false, matched: false },
+        { id: 5, name: 'Globe', shape: 'cylinder', icon: Globe, selected: false, matched: false },
+        { id: 6, name: 'Toples', shape: 'oval', icon: Toples, selected: false, matched: false },
+        { id: 7, name: 'Kaleng', shape: 'cylinder', icon: Kaleng, selected: false, matched: false },
+        { id: 8, name: 'Mainan', shape: 'triangle', icon: Mainan, selected: false, matched: false },
+        { id: 9, name: 'Tas', shape: 'rectangle', icon: Tas, selected: false, matched: false },
+        { id: 10, name: 'Balon', shape: 'circle', icon: Balon, selected: false, matched: false }
     ];
 
     // State management dengan proper typing
@@ -61,10 +61,10 @@ export default function MiniGames2(): JSX.Element {
         const allMatched = items.every(item => item.matched);
         if (allMatched && items.length > 0) {
             setGameComplete(true);
-            updateLevelMiniGames(3);
+            updateLevelMiniGames(4);
 
             const timer = setTimeout(() => {
-                navigateTo("mini-games-3");
+                navigateTo("mini-games-4");
             }, 3000);
 
             return () => clearTimeout(timer);
