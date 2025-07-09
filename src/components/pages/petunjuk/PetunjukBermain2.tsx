@@ -74,9 +74,9 @@ export default function PetunjukBermain2() {
   const handlePlayGame = () => {
     stopAudio();
     if (!playerName || playerName.trim() === "") {
-      navigateTo("register");
+      navigateTo("menu-game");
     } else {
-      navigateTo("game");
+      navigateTo("menu-game");
     }
   };
 
