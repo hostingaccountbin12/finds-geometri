@@ -17,6 +17,7 @@ import DecorRightBot from "@/assets/icons/DecorRightBot.png"
 import FooterMenu from "@/assets/icons/FooterMenu.png"
 import Pohon from "@/assets/icons/Pohon.png"
 import Star from "@/assets/icons/Star.png"
+import AwanMenu from "@/assets/icons/AwanMenu.png"
 
 const playpen = Playpen_Sans({ subsets: ["latin"], weight: "700" });
 
@@ -85,13 +86,23 @@ export default function MenuPage() {
                 />
             </div>
 
+            <div className="absolute top-8 -left-16 z-0">
+                <Image
+                    src={AwanMenu}
+                    alt="Left Up Decoration"
+                    width={isMobileLandscape ? 80 : 550}
+                    height={isMobileLandscape ? 80 : 550}
+                    className="animate-floating"
+                />
+            </div>
+
             {/* Center Up Decoration */}
             <div className="absolute top-8 left-1/2 z-10">
                 <Image
                     src={Star}
                     alt="Left Up Decoration"
-                    width={isMobileLandscape ? 80 : 100}
-                    height={isMobileLandscape ? 80 : 100}
+                    width={isMobileLandscape ? 80 : 130}
+                    height={isMobileLandscape ? 80 : 130}
                     className="animate-floating"
                 />
             </div>
@@ -126,22 +137,22 @@ export default function MenuPage() {
             </div>
 
             {/* Right Bottom Decoration */}
-            <div className="absolute bottom-0 right-0 z-10">
+            <div className="absolute bottom-0 right-0 z-10 animate-pulse">
                 <Image
                     src={DecorRightBot}
                     alt="Right Bottom Decoration"
-                    width={isMobileLandscape ? 60 : 120}
-                    height={isMobileLandscape ? 60 : 120}
+                    width={isMobileLandscape ? 60 : 150}
+                    height={isMobileLandscape ? 60 : 150}
                 />
             </div>
 
             {/* Left Bottom Decoration */}
-            <div className="absolute bottom-0 left-0 z-50">
+            <div className="absolute bottom-0 left-0 z-50 animate-bounce">
                 <Image
                     src={DecorLeftBot}
                     alt="Right Bottom Decoration"
-                    width={isMobileLandscape ? 60 : 120}
-                    height={isMobileLandscape ? 60 : 120}
+                    width={isMobileLandscape ? 60 : 150}
+                    height={isMobileLandscape ? 60 : 150}
                 />
             </div>
 
@@ -175,10 +186,10 @@ export default function MenuPage() {
                 } flex flex-col ${isMobileLandscape ? 'gap-3' : 'gap-5'} animate-floating`}>
 
                 <button
-                    className={`bg-yellow-200 ${isMobileLandscape
+                    className={`bg-yellow-100 ${isMobileLandscape
                         ? 'text-base font-bold py-1 px-4 whitespace-nowrap w-auto'
                         : 'text-2xl font-bold py-4  w-[400px]'
-                        } rounded-full shadow-lg border-2 border-green-100 hover:bg-yellow-400 transition-all hover:scale-105 tracking-wider flex items-center`}
+                        } rounded-full shadow-lg border-2 border-green-100 hover:bg-yellow-300 transition-all hover:scale-105 tracking-wider flex items-center`}
                     onClick={handleRegisterClick}
                 >
                     <span className={`${isMobileLandscape ? 'mr-2 ml-1 text-xl' : 'ml-4 mr-4 text-4xl'}`}><Gamepad /></span>
@@ -186,10 +197,10 @@ export default function MenuPage() {
                 </button>
 
                 <button
-                    className={`bg-orange-300 ${isMobileLandscape
+                    className={`bg-orange-500 ${isMobileLandscape
                         ? 'text-base font-bold py-1 px-4 whitespace-nowrap w-auto'
                         : 'text-2xl font-bold py-4  w-[400px]'
-                        } rounded-full shadow-lg border-2 border-purple-100 hover:bg-orange-500 transition-all hover:scale-105 tracking-wider flex items-center`}
+                        } rounded-full shadow-lg border-2 border-purple-100 hover:bg-orange-600 transition-all hover:scale-105 tracking-wider flex items-center`}
                     onClick={handleToPetunjuk}
                 >
                     <span className={`${isMobileLandscape ? 'mr-2 ml-1 text-xl' : 'ml-4 mr-4 text-4xl'}`}><Notebook /></span>
@@ -197,10 +208,10 @@ export default function MenuPage() {
                 </button>
 
                 <button
-                    className={`bg-red-300 ${isMobileLandscape
+                    className={`bg-red-500 ${isMobileLandscape
                         ? 'text-base font-bold py-1 px-4 whitespace-nowrap w-auto'
                         : 'text-2xl font-bold py-4  w-[400px]'
-                        } rounded-full shadow-lg border-2 border-red-100 hover:bg-red-500 transition-all hover:scale-105 tracking-wider flex items-center`}
+                        } rounded-full shadow-lg border-2 border-red-100 hover:bg-red-600 transition-all hover:scale-105 tracking-wider flex items-center`}
                     onClick={handleProfil}
                 >
                     <span className={`${isMobileLandscape ? 'mr-2 ml-1 text-xl' : 'ml-4 mr-4 text-4xl'}`}><UserRound /></span>

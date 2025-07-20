@@ -44,7 +44,7 @@ export default function ProfilPage() {
             </div>
 
             {/* Center Right Decoration */}
-            <div className="absolute top-1/2 -right-12 transform -translate-y-1/2 z-0">
+            <div className="absolute top-1/2 -right-12 transform -translate-y-1/2 z-0 animate-pulse">
                 <Image
                     src={Pohon}
                     alt="Center Right Decoration"
@@ -54,7 +54,7 @@ export default function ProfilPage() {
             </div>
 
             {/* Center Left Decoration */}
-            <div className="absolute top-1/2 -left-12 transform -translate-y-1/2 z-0">
+            <div className="absolute top-1/2 -left-12 transform -translate-y-1/2 z-0 animate-pulse">
                 <Image
                     src={Pohon}
                     alt="Center Right Decoration"
@@ -65,7 +65,7 @@ export default function ProfilPage() {
 
 
             {/* Title */}
-            <div className="bg-yellow-400 py-2 md:py-4 px-8 md:px-16 mb-6 md:mb-16 border-4 border-yellow-500 relative z-10">
+            <div className="bg-yellow-400 py-2 md:py-4 px-8 md:px-16 mb-6 md:mb-16 border-4 border-yellow-500 relative z-10 animate-bounce">
                 <h1 className={`${playpen.className} text-2xl md:text-4xl text-black`}>Profil Pengembang</h1>
             </div>
 

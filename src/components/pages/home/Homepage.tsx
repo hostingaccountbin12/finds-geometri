@@ -6,6 +6,7 @@ import DecorCenterRight from "@/assets/icons/DecorCenterRight.webp"
 import DecorRightUp from "@/assets/icons/DecorRightUp.png"
 import DecorRightBot from "@/assets/icons/DecorRightBot.png"
 import BgHome from "@/assets/icons/BgHome.webp"
+import DecorHomeLeftBot from "@/assets/icons/DecorHomeLeftBot.png"
 import FooterGrass from "@/assets/icons/FooterGrass.webp"
 import FooterDecor from "@/assets/icons/FooterDecor.gif"
 
@@ -72,8 +73,8 @@ export default function Homepage() {
                 <Image
                     src={DecorLeftUp}
                     alt="Left Up Decoration"
-                    width={isMobileLandscape ? 80 : 120}
-                    height={isMobileLandscape ? 80 : 120}
+                    width={isMobileLandscape ? 80 : 150}
+                    height={isMobileLandscape ? 80 : 150}
                     className="animate-floating"
                 />
             </div>
@@ -83,8 +84,8 @@ export default function Homepage() {
                 <Image
                     src={DecorRightUp}
                     alt="Right Up Decoration"
-                    width={isMobileLandscape ? 60 : 130}
-                    height={isMobileLandscape ? 60 : 130}
+                    width={isMobileLandscape ? 60 : 150}
+                    height={isMobileLandscape ? 60 : 150}
                     className="animate-bounce"
                 />
             </div>
@@ -92,10 +93,24 @@ export default function Homepage() {
             {/* Main Title */}
             <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 z-50">
                 <div className="text-center">
-                    <h1 className="text-8xl font-bernoru text-yellow-400 stroke-black stroke-2 mb-2 animate-pulse">
+                    <h1 className="text-8xl font-bernoru text-yellow-400 stroke-black stroke-2 mb-2 animate-pulse" style={{
+                        textShadow: `
+                    -4px -4px 0 #000,  
+                    4px -4px 0 #000,
+                    -3px 3px 0 #000,
+                    4px 4px 0 #000
+                    `,
+                    }}>
                         FIGE
                     </h1>
-                    <h2 className={`text-7xl ${atma.className} font-bold text-[#cf6f5f] stroke-white stroke-1`}>
+                    <h2 className={`text-7xl ${atma.className} font-bold text-[#cf6f5f] stroke-white stroke-1`} style={{
+                        textShadow: `
+                    -3px -3px 0 #e7e994,  
+                    3px -3px 0 #e7e994,
+                    -2px 2px 0 #e7e994,
+                    3px 3px 0 #e7e994
+                    `,
+                    }}>
                         Find Geometri
                     </h2>
                 </div>
@@ -126,8 +141,18 @@ export default function Homepage() {
                 <Image
                     src={DecorRightBot}
                     alt="Right Bottom Decoration"
-                    width={isMobileLandscape ? 60 : 120}
-                    height={isMobileLandscape ? 60 : 120}
+                    width={isMobileLandscape ? 60 : 150}
+                    height={isMobileLandscape ? 60 : 150}
+                />
+            </div>
+
+            {/* Left Bottom Decoration */}
+            <div className="absolute bottom-8 left-1/4 z-10 animate-pulse">
+                <Image
+                    src={DecorHomeLeftBot}
+                    alt="Right Bottom Decoration"
+                    width={isMobileLandscape ? 60 : 150}
+                    height={isMobileLandscape ? 60 : 150}
                 />
             </div>
 

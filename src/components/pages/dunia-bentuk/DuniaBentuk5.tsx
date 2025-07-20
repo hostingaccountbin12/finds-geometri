@@ -178,8 +178,8 @@ export default function DuniaBentuk5(): JSX.Element {
 
             {/* Title */}
             <div className="pt-20 pb-8 text-center">
-                <h1 className="text-5xl font-bold text-black mb-4">Dunia Bentuk!</h1>
-                <p className="text-xl text-black font-semibold">
+                <h1 className="text-6xl font-bold text-black mb-4">Dunia Bentuk!</h1>
+                <p className="text-3xl text-black font-semibold">
                     Cocokkan gambar berikut sesuai bentuk geometrinya!
                 </p>
             </div>
@@ -199,7 +199,7 @@ export default function DuniaBentuk5(): JSX.Element {
                                 return (
                                     <div
                                         key={item.id}
-                                        className="w-32 h-32 flex items-center justify-center"
+                                        className="w-40 h-44 flex items-center justify-center"
                                     >
                                         {!isCorrectlyPlaced && (
                                             <div
@@ -231,7 +231,7 @@ export default function DuniaBentuk5(): JSX.Element {
                                         key={slot.id}
                                         onDragOver={handleDragOver}
                                         onDrop={(e) => handleDrop(e, slot)}
-                                        className="relative w-32 h-32 flex items-center justify-center transition-all duration-200"
+                                        className="relative w-32 h-36 flex items-center justify-center transition-all duration-200"
                                     >
                                         {droppedItems[slot.id] ? (
                                             <Image

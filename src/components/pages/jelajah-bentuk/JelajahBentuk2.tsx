@@ -27,43 +27,32 @@ interface Feedback {
     [key: number]: boolean;
 }
 
-// Komponen untuk Segitiga
-const Triangle: React.FC<{ 
-    size: number; 
-    color: string; 
-    isDragging?: boolean; 
+// Komponen untuk Persegi
+const Square: React.FC<{
+    size: number;
+    color: string;
+    isDragging?: boolean;
     style?: React.CSSProperties;
 }> = ({ size, color, isDragging = false, style }) => (
     <div
-        className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-6 scale-110' : 'hover:scale-105'}`}
+        className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-3 scale-110' : 'hover:scale-105'}`}
         style={{
             width: size,
             height: size,
+            backgroundColor: color,
+            border: '2px solid #2D3748',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             ...style
         }}
-    >
-        <svg
-            width={size}
-            height={size}
-            viewBox="0 0 100 100"
-            className="drop-shadow-lg"
-        >
-            <polygon
-                points="50,10 90,80 10,80"
-                fill={color}
-                stroke="#2D3748"
-                strokeWidth="2"
-                className="transition-all duration-300"
-            />
-        </svg>
-    </div>
+    />
 );
 
-export default function JelajahBentuk1(): JSX.Element {
+export default function JelajahBentuk2(): JSX.Element {
     const { setComponentVolume } = useAudio();
     const { navigateTo, updateLevelJelajahBentuk, state } = useGameState();
     const [isMobileLandscape, setIsMobileLandscape] = useState<boolean>(false);
-    
+
     // Game state
     const [availableShapes, setAvailableShapes] = useState<Shape[]>([]);
     const [sortedShapes, setSortedShapes] = useState<Shape[]>([]);
@@ -73,13 +62,14 @@ export default function JelajahBentuk1(): JSX.Element {
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
     const [gameLevel] = useState<number>(1);
 
-    // Ukuran dan warna untuk segitiga
+    // Ukuran dan warna untuk persegi (5 bentuk)
     const shapeConfigs: { [key: number]: Shape[] } = {
         1: [
-            { id: 1, size: 60, color: "#FF6B6B", correctOrder: 1 },
-            { id: 2, size: 80, color: "#4ECDC4", correctOrder: 2 },
-            { id: 3, size: 100, color: "#45B7D1", correctOrder: 3 },
-            { id: 4, size: 120, color: "#96CEB4", correctOrder: 4 }
+            { id: 1, size: 50, color: "#FF6B6B", correctOrder: 1 },
+            { id: 2, size: 70, color: "#4ECDC4", correctOrder: 2 },
+            { id: 3, size: 90, color: "#45B7D1", correctOrder: 3 },
+            { id: 4, size: 110, color: "#96CEB4", correctOrder: 4 },
+            { id: 5, size: 130, color: "#FECA57", correctOrder: 5 }
         ]
     };
 
@@ -121,9 +111,9 @@ export default function JelajahBentuk1(): JSX.Element {
         initializeGame();
     }, [setComponentVolume, gameLevel]);
 
-    // Check if game is completed
+    // Check if game is completed (sekarang 5 persegi)
     useEffect(() => {
-        if (completedCount === 4) {
+        if (completedCount === 5) {
             setShowSuccess(true);
 
             // Update level jika diperlukan
@@ -161,7 +151,7 @@ export default function JelajahBentuk1(): JSX.Element {
 
         // Tentukan posisi berikutnya dalam array sorted
         const nextPosition = sortedShapes.length + 1;
-        
+
         // Cek apakah urutan benar
         const isCorrect = draggedShape.correctOrder === nextPosition;
 
@@ -174,7 +164,7 @@ export default function JelajahBentuk1(): JSX.Element {
         } else {
             // Tampilkan feedback salah
             setFeedback(prev => ({ ...prev, [draggedShape.id]: false }));
-            
+
             // Hapus feedback salah setelah 1 detik
             setTimeout(() => {
                 setFeedback(prev => {
@@ -198,11 +188,11 @@ export default function JelajahBentuk1(): JSX.Element {
             const draggedIndex = sortedShapes.findIndex(s => s.id === draggedShape.id);
             const shapesToReturn = sortedShapes.slice(draggedIndex);
             const remainingShapes = sortedShapes.slice(0, draggedIndex);
-            
+
             setSortedShapes(remainingShapes);
             setAvailableShapes(prev => [...prev, ...shapesToReturn]);
             setCompletedCount(remainingShapes.length);
-            
+
             // Hapus feedback untuk shapes yang dikembalikan
             setFeedback(prev => {
                 const newFeedback = { ...prev };
@@ -293,10 +283,10 @@ export default function JelajahBentuk1(): JSX.Element {
                 {/* Title */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white drop-shadow-lg mb-2">
-                        Urutkan Segitiga
+                        Urutkan Persegi
                     </h1>
                     <p className="text-xl text-white drop-shadow-md">
-                        Drag segitiga dari terkecil ke terbesar secara berurutan
+                        Drag persegi dari terkecil ke terbesar secara berurutan
                     </p>
                 </div>
 
@@ -304,7 +294,7 @@ export default function JelajahBentuk1(): JSX.Element {
                 <div className="flex flex-col lg:flex-row gap-8 items-center justify-center">
                     {/* Available Shapes */}
                     <div className="bg-white/80 rounded-xl p-6 backdrop-blur-sm min-h-[200px] flex-1">
-                        <div 
+                        <div
                             className="flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed border-gray-400 rounded-lg p-4"
                             onDragOver={handleDragOver}
                             onDrop={handleDropToAvailable}
@@ -316,12 +306,12 @@ export default function JelajahBentuk1(): JSX.Element {
                                     onDragStart={(e) => handleDragStart(e, shape)}
                                     className="cursor-move relative"
                                 >
-                                    <Triangle
+                                    <Square
                                         size={shape.size}
                                         color={shape.color}
                                         isDragging={draggedShape?.id === shape.id}
                                     />
-                                    
+
                                     {/* Feedback Icons */}
                                     {feedback[shape.id] !== undefined && (
                                         <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
@@ -345,12 +335,11 @@ export default function JelajahBentuk1(): JSX.Element {
                     {/* Sorted Area */}
                     <div className="bg-white/80 rounded-xl p-6 backdrop-blur-sm min-h-[200px] flex-1">
                         <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">
-                             Urutkan dari yang kecil hingga terbesar
+                            Urutkan dari yang kecil hingga terbesar
                         </h2>
-                        <div 
-                            className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 ${
-                                completedCount === 4 ? 'border-green-500 bg-green-100' : 'border-blue-400 bg-blue-50'
-                            }`}
+                        <div
+                            className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 ${completedCount === 5 ? 'border-green-500 bg-green-100' : 'border-blue-400 bg-blue-50'
+                                }`}
                             onDragOver={handleDragOver}
                             onDrop={handleDropToSorted}
                         >
@@ -361,7 +350,7 @@ export default function JelajahBentuk1(): JSX.Element {
                                     onDragStart={(e) => handleDragStart(e, shape)}
                                     className="cursor-move relative"
                                 >
-                                    <Triangle
+                                    <Square
                                         size={shape.size}
                                         color={shape.color}
                                         isDragging={draggedShape?.id === shape.id}
@@ -371,10 +360,10 @@ export default function JelajahBentuk1(): JSX.Element {
                                     </div>
                                 </div>
                             ))}
-                            
+
                             {sortedShapes.length === 0 && (
                                 <div className="text-gray-500 text-center">
-                                    <p className="text-lg font-semibold">Drop segitiga di sini</p>
+                                    <p className="text-lg font-semibold">Drop persegi di sini</p>
                                     <p className="text-sm">Mulai dari yang terkecil</p>
                                 </div>
                             )}
@@ -390,7 +379,7 @@ export default function JelajahBentuk1(): JSX.Element {
                         <div className="text-8xl mb-6">🎉</div>
                         <h2 className="text-6xl font-bold text-green-600 mb-4">Good Job!</h2>
                         <p className="text-2xl text-gray-700 mb-6">
-                            Kamu berhasil mengurutkan semua segitiga!
+                            Kamu berhasil mengurutkan semua persegi!
                         </p>
                         <div className="flex items-center justify-center gap-2 text-lg text-gray-600">
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500"></div>

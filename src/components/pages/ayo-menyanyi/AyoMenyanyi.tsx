@@ -1,25 +1,20 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import { useGameState } from "@/context/GameContext";
 import { Playpen_Sans } from "next/font/google";
 import Image from "next/image";
-
 import BgMenu from "@/assets/icons/BgMenu.webp";
 import Pohon from "@/assets/icons/Pohon.png";
 import FooterMenu from "@/assets/icons/FooterMenu.png";
 import Home from "@/assets/icons/Home.webp";
 import Restart from "@/assets/icons/Restart.webp";
-
 const playpen = Playpen_Sans({ subsets: ["latin"], weight: "700" });
-
 // Sample lyrics data dengan timing (dalam detik)
 interface LyricLine {
     text: string;
     startTime: number;
     endTime: number;
 }
-
 const sampleLyrics: LyricLine[] = [
     { text: "Matahari bersinar terang", startTime: 2, endTime: 4 },
     { text: "Di langit yang biru", startTime: 4.5, endTime: 6.5 },
@@ -31,15 +26,12 @@ const sampleLyrics: LyricLine[] = [
     { text: "Dengan hati yang gembira", startTime: 19, endTime: 21 },
     { text: "Selamanya bahagia", startTime: 21.5, endTime: 23.5 },
 ];
-
 interface LyricsDisplayProps {
     isMobile?: boolean;
 }
-
 export default function AyoMenyanyi(): JSX.Element {
     const { navigateTo } = useGameState();
     const audioRef = useRef<HTMLAudioElement | null>(null);
-
     // Karaoke states
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [currentTime, setCurrentTime] = useState<number>(0);
@@ -47,7 +39,6 @@ export default function AyoMenyanyi(): JSX.Element {
     const [hasStarted, setHasStarted] = useState<boolean>(false);
     const [visibleWindow, setVisibleWindow] = useState<number[]>([0, 1, 2]); // Track visible lyric indices
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
     useEffect(() => {
         // Buat audio dan mulai play
         const audio = new Audio("/audio/Petunjuk bermain-1.m4a");
@@ -55,7 +46,6 @@ export default function AyoMenyanyi(): JSX.Element {
         audio.play().catch((e: Error) => {
             console.warn("Audio autoplay diblokir oleh browser:", e);
         });
-
         return () => {
             // Bersihkan audio saat komponen di-unmount
             if (audioRef.current) {
@@ -67,7 +57,6 @@ export default function AyoMenyanyi(): JSX.Element {
             }
         };
     }, []);
-
     // Simulasi audio timer untuk karaoke
     useEffect(() => {
         if (isPlaying) {
@@ -89,7 +78,6 @@ export default function AyoMenyanyi(): JSX.Element {
                 intervalRef.current = null;
             }
         }
-
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
@@ -97,7 +85,6 @@ export default function AyoMenyanyi(): JSX.Element {
             }
         };
     }, [isPlaying]);
-
     // Update current lyric index berdasarkan waktu
     useEffect(() => {
         const activeIndex = sampleLyrics.findIndex(
@@ -105,7 +92,6 @@ export default function AyoMenyanyi(): JSX.Element {
         );
         setCurrentLyricIndex(activeIndex);
     }, [currentTime]);
-
     // Update visible window berdasarkan current lyric index dengan logika yang lebih stabil
     useEffect(() => {
         // Tentukan last active lyric untuk mengatasi gap timing
@@ -118,9 +104,7 @@ export default function AyoMenyanyi(): JSX.Element {
             }
             return -1;
         };
-
         let targetLyricIndex = currentLyricIndex;
-
         // Jika currentLyricIndex adalah -1 (gap antar lirik), gunakan last active lyric + 1
         if (currentLyricIndex === -1 && hasStarted) {
             const lastActive = getLastActiveLyric();
@@ -132,10 +116,8 @@ export default function AyoMenyanyi(): JSX.Element {
                 }
             }
         }
-
         if (targetLyricIndex >= 0) {
             let newWindow: number[];
-
             if (targetLyricIndex === 0) {
                 // Tahap 1: [0, 1, 2] dengan highlight di index 0
                 newWindow = [0, 1, 2];
@@ -156,7 +138,6 @@ export default function AyoMenyanyi(): JSX.Element {
                     }
                 }
             }
-
             // Update window hanya jika berbeda untuk menghindari flickering
             if (JSON.stringify(newWindow) !== JSON.stringify(visibleWindow)) {
                 setVisibleWindow(newWindow);
@@ -169,21 +150,18 @@ export default function AyoMenyanyi(): JSX.Element {
         }
         // Jika currentLyricIndex === -1 dan sudah started, JANGAN update window (pertahankan yang ada)
     }, [currentLyricIndex, currentTime, hasStarted, visibleWindow]);
-
     const stopAudio = (): void => {
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
         }
     };
-
     const handleRestart = (): void => {
         // Stop interval terlebih dahulu
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
         }
-
         // Reset karaoke
         setCurrentTime(0);
         setCurrentLyricIndex(-1);
@@ -192,13 +170,11 @@ export default function AyoMenyanyi(): JSX.Element {
         setVisibleWindow([0, 1, 2]); // Reset visible window
         stopAudio();
     };
-
     const handleMenu = (): void => {
         stopAudio();
         handleRestart();
         navigateTo("menu-game");
     };
-
     const handleStartKaraoke = (): void => {
         setIsPlaying(true);
         setHasStarted(true);
@@ -207,24 +183,23 @@ export default function AyoMenyanyi(): JSX.Element {
         setVisibleWindow([0, 1, 2]); // Reset visible window
         stopAudio(); // Stop the instruction audio
     };
-
     // Komponen Lyrics Display dengan sliding logic yang diperbaiki
     const LyricsDisplay: React.FC<LyricsDisplayProps> = ({ isMobile = false }) => {
         return (
             <div className="flex-1 overflow-hidden relative h-full">
                 {!hasStarted ? (
                     <div className="flex flex-col items-center justify-center h-full">
-                        <h2 className={`${isMobile ? 'text-base' : 'text-2xl'} font-bold text-amber-800 ${isMobile ? 'mb-2' : 'mb-4'} text-center ${playpen.className}`}>
+                        <h2 className={`${isMobile ? 'text-base' : 'text-3xl'} font-bold text-amber-800 ${isMobile ? 'mb-2' : 'mb-6'} text-center ${playpen.className}`}>
                             Lagu Pagi Cerah
                         </h2>
                         {!isMobile && (
-                            <p className={`text-amber-700 text-center mb-6 ${playpen.className}`}>
+                            <p className={`text-amber-700 text-center mb-8 text-lg ${playpen.className}`}>
                                 Siap untuk bernyanyi?
                             </p>
                         )}
                         <button
                             onClick={handleStartKaraoke}
-                            className={`bg-green-500 hover:bg-green-600 text-white ${isMobile ? 'px-3 py-2 text-xs' : 'px-6 py-3'} rounded-full font-bold transition-all hover:scale-105 shadow-lg ${playpen.className} cursor-pointer`}
+                            className={`bg-green-500 hover:bg-green-600 text-white ${isMobile ? 'px-3 py-2 text-xs' : 'px-8 py-4 text-lg'} rounded-full font-bold transition-all hover:scale-105 shadow-lg ${playpen.className} cursor-pointer`}
                         >
                             {isMobile ? '▶ Mulai' : '▶ Mulai Bernyanyi'}
                         </button>
@@ -232,40 +207,37 @@ export default function AyoMenyanyi(): JSX.Element {
                 ) : (
                     <div className="h-full flex flex-col">
                         {/* Progress bar */}
-                        <div className={`w-full bg-amber-200 rounded-full ${isMobile ? 'h-1 mb-2' : 'h-2 mb-4'} flex-shrink-0`}>
+                        <div className={`w-full bg-amber-200 rounded-full ${isMobile ? 'h-1 mb-2' : 'h-3 mb-6'} flex-shrink-0`}>
                             <div
-                                className={`bg-green-500 ${isMobile ? 'h-1' : 'h-2'} rounded-full transition-all duration-100`}
+                                className={`bg-green-500 ${isMobile ? 'h-1' : 'h-3'} rounded-full transition-all duration-100`}
                                 style={{ width: `${Math.min((currentTime / 25) * 100, 100)}%` }}
                             />
                         </div>
-
                         {/* Lyrics container dengan sliding display yang stabil */}
                         <div className="flex-1 flex flex-col justify-center items-center relative">
                             <div
                                 className="w-full flex flex-col items-center justify-center"
                                 style={{
-                                    height: isMobile ? '120px' : '180px',
-                                    gap: isMobile ? '8px' : '12px'
+                                    height: isMobile ? '120px' : '240px',
+                                    gap: isMobile ? '8px' : '16px'
                                 }}
                             >
                                 {visibleWindow.map((lyricIndex) => {
                                     const lyric = sampleLyrics[lyricIndex];
                                     if (!lyric) return null;
-
                                     const isActive = lyricIndex === currentLyricIndex;
                                     const isPast = currentTime > lyric.endTime && lyric.text !== "";
-
                                     return (
                                         <div
                                             key={lyricIndex} // Gunakan lyricIndex sebagai key yang stabil
                                             className={`text-center transition-all duration-300 ${playpen.className} w-full px-4 ${isActive
-                                                    ? `bg-yellow-300 text-amber-900 font-bold ${isMobile ? 'text-base py-3 px-3' : 'text-xl py-4 px-6'} shadow-lg transform scale-110 rounded-lg border-2 border-yellow-500`
+                                                    ? `bg-yellow-300 text-amber-900 font-bold ${isMobile ? 'text-base py-3 px-3' : 'text-2xl py-5 px-8'} shadow-lg transform scale-110 rounded-lg border-2 border-yellow-500`
                                                     : isPast
-                                                        ? `text-amber-500 ${isMobile ? 'text-sm py-2' : 'text-lg py-3'} opacity-70`
-                                                        : `text-amber-700 ${isMobile ? 'text-sm py-2' : 'text-lg py-3'} opacity-90`
+                                                        ? `text-amber-500 ${isMobile ? 'text-sm py-2' : 'text-xl py-4'} opacity-70`
+                                                        : `text-amber-700 ${isMobile ? 'text-sm py-2' : 'text-xl py-4'} opacity-90`
                                                 }`}
                                             style={{
-                                                minHeight: isMobile ? '36px' : '48px',
+                                                minHeight: isMobile ? '36px' : '60px',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
@@ -280,9 +252,8 @@ export default function AyoMenyanyi(): JSX.Element {
                                     );
                                 })}
                             </div>
-
                             {/* Debugging info */}
-                            {process.env.NODE_ENV === 'development' && (
+                            {/* {process.env.NODE_ENV === 'development' && (
                                 <div className="absolute bottom-0 left-0 text-xs text-amber-600 bg-white p-1 rounded">
                                     Active: {currentLyricIndex} | Time: {currentTime.toFixed(1)}s | Window: [{visibleWindow.join(', ')}]
                                     <br />
@@ -301,14 +272,13 @@ export default function AyoMenyanyi(): JSX.Element {
                                         return lastActive >= 0 && lastActive < sampleLyrics.length - 1 ? lastActive + 1 : 'none';
                                     })()}
                                 </div>
-                            )}
+                            )} */}
                         </div>
                     </div>
                 )}
             </div>
         );
     };
-
     // Desktop layout
     return (
         <div className="relative w-full h-screen bg-sky-400 overflow-hidden flex flex-col items-center justify-center">
@@ -321,7 +291,6 @@ export default function AyoMenyanyi(): JSX.Element {
                     priority
                 />
             </div>
-
             {/* Home Button - Tombol Kembali */}
             <div className="absolute top-8 right-8 z-10">
                 <button
@@ -332,7 +301,6 @@ export default function AyoMenyanyi(): JSX.Element {
                     <Image src={Home} alt="Home" width={65} height={65} />
                 </button>
             </div>
-
             <div className="absolute top-8 left-8 z-10">
                 <button
                     className="flex items-center justify-center transition-all hover:scale-105 cursor-pointer"
@@ -342,7 +310,6 @@ export default function AyoMenyanyi(): JSX.Element {
                     <Image src={Restart} alt="Restart" width={65} height={65} />
                 </button>
             </div>
-
             {/* Center Right Decoration */}
             <div className="absolute top-1/2 -right-12 transform -translate-y-1/2 z-0">
                 <Image
@@ -352,7 +319,6 @@ export default function AyoMenyanyi(): JSX.Element {
                     height={250}
                 />
             </div>
-
             {/* Center Left Decoration */}
             <div className="absolute top-1/2 -left-12 transform -translate-y-1/2 z-0">
                 <Image
@@ -362,20 +328,17 @@ export default function AyoMenyanyi(): JSX.Element {
                     height={250}
                 />
             </div>
-
-            {/* Karaoke Board - Desktop */}
+            {/* Karaoke Board - Desktop - DIPERBESAR */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-                <div className="bg-amber-100 border-8 border-amber-800 rounded-2xl shadow-2xl p-6 w-96 h-80 flex flex-col">
+                <div className="bg-amber-100 border-8 border-amber-800 rounded-2xl shadow-2xl p-8 w-[600px] h-[450px] flex flex-col">
                     {/* Board header */}
-                    <div className="flex justify-center mb-4 flex-shrink-0">
-                        <div className="w-4 h-4 bg-amber-600 rounded-full mx-2" />
-                        <div className="w-4 h-4 bg-amber-600 rounded-full mx-2" />
+                    <div className="flex justify-center mb-6 flex-shrink-0">
+                        <div className="w-5 h-5 bg-amber-600 rounded-full mx-3" />
+                        <div className="w-5 h-5 bg-amber-600 rounded-full mx-3" />
                     </div>
-
                     <LyricsDisplay isMobile={false} />
                 </div>
             </div>
-
             <div className="absolute -bottom-0 left-0 right-0 z-0">
                 <Image src={FooterMenu} alt="Footer" width={2000} height={400} />
             </div>

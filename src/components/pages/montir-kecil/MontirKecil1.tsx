@@ -121,8 +121,8 @@ export default function MontirKecil1() {
 
             {/* Title */}
             <div className="pt-8 text-center relative z-10">
-                <h1 className="text-5xl font-bold text-black mb-4">Montir Kecil!</h1>
-                <p className="text-xl text-black font-semibold">
+                <h1 className="text-6xl font-bold text-black mb-4">Montir Kecil!</h1>
+                <p className="text-3xl text-black font-semibold">
                     Manakah bentuk ban mobil yang tepat?
                 </p>
             </div>

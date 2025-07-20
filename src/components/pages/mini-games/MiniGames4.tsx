@@ -172,7 +172,7 @@ export default function MiniGames4(): JSX.Element {
             {/* Header */}
             <div className="flex justify-center mt-8 mb-4">
                 <div className="bg-white border-4 border-yellow-400 rounded-lg px-8 py-4 shadow-lg">
-                    <h1 className={`text-3xl ${playpen.className} font-bold text-red-500`}>Mini Games</h1>
+                    <h1 className={`text-4xl ${playpen.className} font-bold text-red-500`}>Mini Games</h1>
                 </div>
             </div>
 
@@ -185,7 +185,7 @@ export default function MiniGames4(): JSX.Element {
 
             {/* Game Grid */}
             <div className="flex-1 flex flex-col items-center justify-center px-8">
-                <div className="grid grid-cols-5 gap-4 mb-8">
+                <div className="grid grid-cols-5 gap-10 mb-8">
                     {items.map((item) => (
                         <div
                             key={item.id}
@@ -202,7 +202,7 @@ export default function MiniGames4(): JSX.Element {
                                 <Image
                                     src={item.icon}
                                     alt={item.name}
-                                    width={64}
+                                    width={85}
                                     height={64}
                                     className="object-contain"
                                 />
@@ -210,7 +210,7 @@ export default function MiniGames4(): JSX.Element {
 
                             {/* Item name */}
                             <div className="bg-yellow-300 text-center py-2 rounded-b-lg">
-                                <p className="font-bold text-black">{item.name}</p>
+                                <p className="font-bold text-black text-xl">{item.name}</p>
                             </div>
 
                             {/* Match indicator */}

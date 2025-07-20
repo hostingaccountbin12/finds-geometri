@@ -105,36 +105,42 @@ export default function MenuGame() {
     {
       id: 'ayo-menyanyi',
       icon: AyoMenyanyi,
+      width: 270,
       level: null,
       isCompleted: state.isAyoMenyanyiFinished
     },
     {
       id: 'jelajah-bentuk',
       icon: JelajahBentuk,
+      width: 270,
       level: state.levelJelajahBentuk,
       isCompleted: state.isJelajahBentukFinished
     },
     {
       id: 'dunia-bentuk',
       icon: DuniaBentuk,
+      width: 270,
       level: state.levelDuniaBentuk,
       isCompleted: state.isDuniaBentukFinished
     },
     {
       id: 'montir-kecil',
       icon: MontirKecil,
+      width: 210,
       level: state.levelMontirKecil,
       isCompleted: state.isMontirKecilFinished
     },
     {
       id: 'mari-berkreasi',
       icon: MariBerkreasi,
+      width: 210,
       level: null,
       isCompleted: state.isMariBekreasFinished
     },
     {
       id: 'mini-games',
       icon: MiniGames,
+      width: 280,
       level: state.levelMiniGames,
       isCompleted: state.isMiniGamesFinished
     }
@@ -164,7 +170,7 @@ export default function MenuGame() {
       </div>
 
       {/* Center Right Decoration */}
-      <div className="absolute top-1/2 -right-12 transform -translate-y-1/2 z-0">
+      <div className="absolute top-1/2 -right-12 transform -translate-y-1/2 z-0 animate-pulse">
         <Image
           src={Pohon}
           alt="Center Right Decoration"
@@ -174,7 +180,7 @@ export default function MenuGame() {
       </div>
 
       {/* Center Left Decoration */}
-      <div className="absolute top-1/2 -left-12 transform -translate-y-1/2 z-0">
+      <div className="absolute top-1/2 -left-12 transform -translate-y-1/2 z-0 animate-pulse">
         <Image
           src={Pohon}
           alt="Center Left Decoration"
@@ -201,8 +207,7 @@ export default function MenuGame() {
                 <Image
                   src={item.icon}
                   alt={item.id}
-                  width={250}
-                  height={100}
+                  width={item.width}
                   className="h-auto object-contain"
                 />
 

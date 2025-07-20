@@ -8,7 +8,7 @@ export type GameScreen = 'home' | 'menu' | 'menu-game' | 'profil' | 'petunjuk-be
     | 'ayo-menyanyi'| 'mari-berkreasi' 
     | 'dunia-bentuk-1' | 'dunia-bentuk-2' | 'dunia-bentuk-3' | 'dunia-bentuk-4' | 'dunia-bentuk-5'
     | 'montir-kecil-1' | 'montir-kecil-2' | 'montir-kecil-3' | 'montir-kecil-4' | 'montir-kecil-5' 
-    | 'jelajah-bentuk-1' | 'jelajah-bentuk-2' | 'jelajah-bentuk-3'
+    | 'jelajah-bentuk-1' | 'jelajah-bentuk-2' | 'jelajah-bentuk-3' | 'jelajah-bentuk-4' | 'jelajah-bentuk-5'
     | 'mini-games-1' | 'mini-games-2' | 'mini-games-3' | 'mini-games-4' | 'mini-games-5'
 
 export type Gender = 'male' | 'female';
