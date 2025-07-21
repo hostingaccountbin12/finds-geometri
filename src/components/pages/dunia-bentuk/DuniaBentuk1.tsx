@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, DragEvent } from "react";
+import React, { useState, useEffect, useRef, DragEvent } from "react";
 import { Check, X } from "lucide-react";
 import Home from "@/assets/icons/Home.webp";
 import Image from "next/image";
@@ -88,6 +89,9 @@ export default function DuniaBentuk1(): JSX.Element {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const { navigateTo, updateLevelDuniaBentuk, state } = useGameState();
 
+  // Audio ref untuk kontrol audio
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   const handleDragStart = (e: DragEvent<HTMLDivElement>, item: GameItem): void => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = "move";
@@ -146,8 +150,38 @@ export default function DuniaBentuk1(): JSX.Element {
   };
 
   const handleBackToMenu = () => {
+    // Stop audio ketika kembali ke menu
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     navigateTo("menu-game");
   };
+
+  // Effect untuk memutar audio saat komponen pertama kali dimount
+  useEffect(() => {
+    const playAudio = async () => {
+      try {
+        if (audioRef.current) {
+          audioRef.current.volume = 0.9; // Set volume (0.0 - 1.0)
+          await audioRef.current.play();
+        }
+      } catch (error) {
+        console.log("Audio could not be played automatically:", error);
+        // Audio mungkin diblokir oleh browser policy, biarkan user mengklik untuk memutar
+      }
+    };
+
+    playAudio();
+
+    // Cleanup: pause audio ketika component unmount
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
 
   // Effect to handle completion
   useEffect(() => {
@@ -161,6 +195,11 @@ export default function DuniaBentuk1(): JSX.Element {
 
       // Auto navigate to dunia-bentuk-2 after 3 seconds
       const timer = setTimeout(() => {
+        // Stop audio sebelum pindah ke level berikutnya
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
         navigateTo("dunia-bentuk-2");
       }, 3000);
 
@@ -170,6 +209,14 @@ export default function DuniaBentuk1(): JSX.Element {
 
   return (
     <div className="relative w-full h-screen bg-[#fef625] overflow-hidden flex flex-col">
+      {/* Audio Element */}
+      <audio
+        ref={audioRef}
+        preload="auto"
+      >
+        <source src="/audio/Dunia bentuk Fige.m4a" type="audio/mp4" />
+      </audio>
+
       {/* Home Button - Tombol Kembali */}
       <div className="absolute top-8 right-8 z-10">
         <button
@@ -236,7 +283,7 @@ export default function DuniaBentuk1(): JSX.Element {
                     key={slot.id}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, slot)}
-                    className="relative w-36 h-32 flex items-center justify-center transition-all duration-200"
+                    className="relative w-32 h-36 flex items-center justify-center transition-all duration-200"
                   >
                     {droppedItems[slot.id] ? (
                       <Image
@@ -279,7 +326,7 @@ export default function DuniaBentuk1(): JSX.Element {
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
           <div className="bg-white rounded-3xl p-12 text-center shadow-2xl border-8 border-green-500 max-w-md w-full mx-4">
             <div className="text-8xl mb-6">🎉</div>
-            <h2 className="text-6xl font-bold text-green-600 mb-4">Good Job!</h2>
+            <h2 className="text-6xl font-bold text-green-600 mb-4">Kerja Bagus!</h2>
             <p className="text-2xl text-gray-700 mb-6">
               Kamu berhasil mencocokkan semua bentuk!
             </p>
@@ -291,14 +338,6 @@ export default function DuniaBentuk1(): JSX.Element {
         </div>
       )}
 
-      {/* Progress Indicator */}
-      {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <div className="bg-white rounded-full px-6 py-3 border-4 border-gray-800 shadow-lg">
-          <span className="text-xl font-bold text-gray-800">
-            {completedCount}/4 Benar
-          </span>
-        </div>
-      </div> */}
     </div>
   );
 }

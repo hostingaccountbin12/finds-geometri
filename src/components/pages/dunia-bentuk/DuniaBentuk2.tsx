@@ -236,7 +236,7 @@ export default function DuniaBentuk2(): JSX.Element {
                                         key={slot.id}
                                         onDragOver={handleDragOver}
                                         onDrop={(e) => handleDrop(e, slot)}
-                                        className="relative w-40 h-32 flex items-center justify-center transition-all duration-200"
+                                        className="relative w-36 h-32 flex items-center justify-center transition-all duration-200"
                                     >
                                         {droppedItems[slot.id] ? (
                                             <Image
@@ -279,7 +279,7 @@ export default function DuniaBentuk2(): JSX.Element {
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
                     <div className="bg-white rounded-3xl p-12 text-center shadow-2xl border-8 border-green-500 max-w-md w-full mx-4">
                         <div className="text-8xl mb-6">🎉</div>
-                        <h2 className="text-6xl font-bold text-green-600 mb-4">Good Job!</h2>
+                        <h2 className="text-6xl font-bold text-green-600 mb-4">Kerja Bagus!</h2>
                         <p className="text-2xl text-gray-700 mb-6">
                             Kamu berhasil mencocokkan semua bentuk!
                         </p>

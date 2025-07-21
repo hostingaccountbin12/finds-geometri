@@ -6,9 +6,9 @@ import { useGameState } from "@/context/GameContext";
 import { DynaPuff } from "next/font/google";
 import Image from "next/image";
 import Home from "@/assets/icons/Home.webp";
-import Restart from "@/assets/icons/Restart.webp"
-import BackNext from "@/assets/icons/BackNext.gif"
-import Start from "@/assets/icons/Start.webp"
+// import Restart from "@/assets/icons/Restart.webp"
+// import BackNext from "@/assets/icons/BackNext.gif"
+// import Start from "@/assets/icons/Start.webp"
 
 import BgMenu from "@/assets/icons/BgMenu.webp";
 import Pohon from "@/assets/icons/Pohon.png";
@@ -24,7 +24,7 @@ export default function PetunjukBermain2() {
 
   useEffect(() => {
     // Buat audio dan mulai play
-    const audio = new Audio("/audio/Ketujuh.m4a");
+    const audio = new Audio("/audio/Petunjuk7-9.m4a");
     audioRef.current = audio;
     audio.play().catch((e) => {
       console.warn("Audio autoplay diblokir oleh browser:", e);
@@ -157,43 +157,14 @@ export default function PetunjukBermain2() {
             <div className="grid grid-cols-[auto_1fr] gap-y-3 gap-x-2">
               <div className="text-lg font-bold">7.</div>
               <div className="text-lg font-bold flex items-center flex-wrap gap-1">
-                Klik
-                <Image
-                  alt="Restart"
-                  src={Restart}
-                  width={24}
-                  height={24}
-                  className="inline-block"
-                />
-                untuk memulai ulang Permainan
+                {`Klik "Mari Berkreasi" untuk membuat gambar sesuai keinginan`}
               </div>
               <div className="text-lg font-bold">8.</div>
               <div className="text-lg font-bold flex items-center flex-wrap gap-1">
-                Klik
-                <Image
-                  alt="Back Next"
-                  src={BackNext}
-                  width={24}
-                  height={24}
-                  className="inline-block"
-                />
-                untuk mengubah bentuk geometri
+              {`Klik “Mini Games” untuk bermain mencocokkan gambar berdasarkan bentuk geometri yang sama`}
               </div>
 
               <div className="text-lg font-bold">9.</div>
-              <div className="text-lg font-bold flex items-center flex-wrap gap-1">
-                Klik
-                <Image
-                  alt="Start"
-                  src={Start}
-                  width={24}
-                  height={24}
-                  className="inline-block"
-                />
-                untuk melanjutkan permainan
-              </div>
-
-              <div className="text-lg font-bold">10.</div>
               <div className="text-lg font-bold flex items-center flex-wrap gap-1">
                 Klik
                 <Image
@@ -327,41 +298,15 @@ export default function PetunjukBermain2() {
           <div className="grid grid-cols-[auto_1fr] gap-y-6 gap-x-4">
             <div className="text-3xl font-bold">7.</div>
             <div className="text-3xl font-bold flex items-center flex-wrap gap-2">
-              Klik
-              <Image
-                alt="Restart"
-                src={Restart}
-                width={32}
-                height={32}
-                className="inline-block"
-              />
-              untuk memulai ulang Permainan
+                {`Klik "Mari Berkreasi" untuk membuat gambar sesuai keinginan`}
             </div>
+
             <div className="text-3xl font-bold">8.</div>
             <div className="text-3xl font-bold flex items-center flex-wrap gap-2">
-              Klik
-              <Image
-                alt="Back Next"
-                src={BackNext}
-                width={55}
-                height={55}
-                className="inline-block"
-              />
-              untuk mengubah bentuk geometri
+             {`Klik “Mini Games” untuk bermain mencocokkan gambar berdasarkan bentuk geometri yang sama`}
             </div>
+
             <div className="text-3xl font-bold">9.</div>
-            <div className="text-3xl font-bold flex items-center flex-wrap gap-2">
-              Klik
-              <Image
-                alt="Start"
-                src={Start}
-                width={32}
-                height={32}
-                className="inline-block"
-              />
-              untuk melanjutkan permainan
-            </div>
-            <div className="text-3xl font-bold">10.</div>
             <div className="text-3xl font-bold flex items-center flex-wrap gap-2">
               Klik
               <Image

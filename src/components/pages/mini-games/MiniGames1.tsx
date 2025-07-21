@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Home from "@/assets/icons/Home.webp";
 import Image from "next/image";
 import { Check, X } from 'lucide-react';
@@ -36,6 +36,9 @@ const playpen = Playpen_Sans({ subsets: ["latin"], weight: "700" });
 export default function MiniGames1(): JSX.Element {
     const { navigateTo, updateLevelMiniGames } = useGameState();
 
+    // Ref untuk audio
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
     // Data game items dengan icon dan nama yang sesuai import
     const gameItems: GameItem[] = [
         { id: 1, name: 'Semangka', shape: 'triangle', icon: Semangka, selected: false, matched: false },
@@ -55,12 +58,70 @@ export default function MiniGames1(): JSX.Element {
     const [selectedItems, setSelectedItems] = useState<GameItem[]>([]);
     const [showFeedback, setShowFeedback] = useState<FeedbackType>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
+    const [audioLoaded, setAudioLoaded] = useState<boolean>(false);
+
+    // Effect untuk memuat dan memutar audio instruksi ketika komponen dimount
+    useEffect(() => {
+        // Buat audio element
+        audioRef.current = new Audio('audio/Mini games fige.m4a'); // Ganti dengan path audio Anda
+
+        // Event listener untuk mengetahui kapan audio sudah loaded
+        const handleCanPlay = () => {
+            setAudioLoaded(true);
+        };
+
+        // Event listener untuk error handling
+        const handleError = (e: any) => {
+            console.warn('Audio gagal dimuat:', e);
+            setAudioLoaded(false);
+        };
+
+        if (audioRef.current) {
+            audioRef.current.addEventListener('canplay', handleCanPlay);
+            audioRef.current.addEventListener('error', handleError);
+
+            // Set volume (opsional, 0.0 - 1.0)
+            audioRef.current.volume = 0.7;
+        }
+
+        // Cleanup
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.removeEventListener('canplay', handleCanPlay);
+                audioRef.current.removeEventListener('error', handleError);
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, []);
+
+    // Effect untuk memutar audio ketika sudah loaded
+    useEffect(() => {
+        if (audioLoaded && audioRef.current) {
+            // Delay sedikit untuk memastikan komponen sudah ter-render
+            const timer = setTimeout(() => {
+                if (audioRef.current) {
+                    audioRef.current.play().catch((error) => {
+                        console.warn('Gagal memutar audio:', error);
+                        // Beberapa browser memblokir autoplay, jadi ini adalah fallback normal
+                    });
+                }
+            }, 500);
+
+            return () => clearTimeout(timer);
+        }
+    }, [audioLoaded]);
 
     // Check if game is complete
     useEffect(() => {
         const allMatched = items.every(item => item.matched);
         if (allMatched && items.length > 0) {
             setGameComplete(true);
+            // Hentikan audio instruksi jika masih berjalan
+            if (audioRef.current) {
+                audioRef.current.pause();
+            }
+
             // Update level mini games ke 2
             updateLevelMiniGames(2);
 
@@ -71,7 +132,7 @@ export default function MiniGames1(): JSX.Element {
 
             return () => clearTimeout(timer);
         }
-    }, [items]); // Only depend on items
+    }, [items]);
 
     // Auto check when 2 items are selected
     useEffect(() => {
@@ -152,9 +213,12 @@ export default function MiniGames1(): JSX.Element {
     };
 
     const handleBackToMenu = (): void => {
+        // Hentikan audio sebelum keluar
+        if (audioRef.current) {
+            audioRef.current.pause();
+        }
         navigateTo("menu-game");
     };
-
 
     return (
         <div className="relative w-full h-screen bg-[#93dfff] overflow-hidden flex flex-col">

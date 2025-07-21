@@ -75,7 +75,7 @@ export default function Homepage() {
                     alt="Left Up Decoration"
                     width={isMobileLandscape ? 80 : 150}
                     height={isMobileLandscape ? 80 : 150}
-                    className="animate-floating"
+                    className="animate-pulse"
                 />
             </div>
 
@@ -86,7 +86,7 @@ export default function Homepage() {
                     alt="Right Up Decoration"
                     width={isMobileLandscape ? 60 : 150}
                     height={isMobileLandscape ? 60 : 150}
-                    className="animate-bounce"
+                    className="animate-pulse"
                 />
             </div>
 
@@ -164,7 +164,7 @@ export default function Homepage() {
                     width={2000}
                 />
             </div>
-            <div className="absolute bottom-0 -left-44 right-0 z-5">
+            <div className="absolute bottom-0 -left-44 right-0 z-5 animate-pulse">
                 <Image
                     src={FooterDecor}
                     alt="Footer"

@@ -42,7 +42,7 @@ export default function MenuPage() {
     }, []);
 
     useEffect(() => {
-        setComponentVolume(0.7);
+        setComponentVolume(0.2);
     }, [setComponentVolume]);
 
     const handleRegisterClick = () => {
@@ -186,10 +186,10 @@ export default function MenuPage() {
                 } flex flex-col ${isMobileLandscape ? 'gap-3' : 'gap-5'} animate-floating`}>
 
                 <button
-                    className={`bg-yellow-100 ${isMobileLandscape
+                    className={`bg-yellow-300 ${isMobileLandscape
                         ? 'text-base font-bold py-1 px-4 whitespace-nowrap w-auto'
                         : 'text-2xl font-bold py-4  w-[400px]'
-                        } rounded-full shadow-lg border-2 border-green-100 hover:bg-yellow-300 transition-all hover:scale-105 tracking-wider flex items-center`}
+                        } rounded-full shadow-lg border-2 border-green-100 hover:bg-yellow-400 transition-all hover:scale-105 tracking-wider flex items-center`}
                     onClick={handleRegisterClick}
                 >
                     <span className={`${isMobileLandscape ? 'mr-2 ml-1 text-xl' : 'ml-4 mr-4 text-4xl'}`}><Gamepad /></span>

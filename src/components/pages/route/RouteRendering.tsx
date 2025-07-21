@@ -26,6 +26,9 @@ import MiniGames3 from "../mini-games/MiniGames3";
 import MiniGames4 from "../mini-games/MiniGames4";
 import MiniGames5 from "../mini-games/MiniGames5";
 import JelajahBentuk2 from "../jelajah-bentuk/JelajahBentuk2";
+import JelajahBentuk3 from "../jelajah-bentuk/JelajahBentuk3";
+import JelajahBentuk4 from "../jelajah-bentuk/JelajahBentuk4";
+import JelajahBentuk5 from "../jelajah-bentuk/JelajahBentuk5";
 // Import other game screens as needed
 
 export default function BankKidsApp() {
@@ -77,6 +80,12 @@ export default function BankKidsApp() {
             return <JelajahBentuk1 />;
         case 'jelajah-bentuk-2':
             return <JelajahBentuk2 />;
+        case 'jelajah-bentuk-3':
+            return <JelajahBentuk3 />;
+        case 'jelajah-bentuk-4':
+            return <JelajahBentuk4 />;
+        case 'jelajah-bentuk-5':
+            return <JelajahBentuk5 />;
         case 'petunjuk-bermain-1':
             return <PetunjukBermain1 />
         case 'petunjuk-bermain-2':

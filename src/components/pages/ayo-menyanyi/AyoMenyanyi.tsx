@@ -189,11 +189,11 @@ export default function AyoMenyanyi(): JSX.Element {
             <div className="flex-1 overflow-hidden relative h-full">
                 {!hasStarted ? (
                     <div className="flex flex-col items-center justify-center h-full">
-                        <h2 className={`${isMobile ? 'text-base' : 'text-3xl'} font-bold text-amber-800 ${isMobile ? 'mb-2' : 'mb-6'} text-center ${playpen.className}`}>
+                        <h2 className={`${isMobile ? 'text-base' : 'text-3xl'} font-bold ${isMobile ? 'mb-2' : 'mb-6'} text-center ${playpen.className}`}>
                             Lagu Pagi Cerah
                         </h2>
                         {!isMobile && (
-                            <p className={`text-amber-700 text-center mb-8 text-lg ${playpen.className}`}>
+                            <p className={`text-center mb-8 text-lg ${playpen.className}`}>
                                 Siap untuk bernyanyi?
                             </p>
                         )}
@@ -231,10 +231,10 @@ export default function AyoMenyanyi(): JSX.Element {
                                         <div
                                             key={lyricIndex} // Gunakan lyricIndex sebagai key yang stabil
                                             className={`text-center transition-all duration-300 ${playpen.className} w-full px-4 ${isActive
-                                                    ? `bg-yellow-300 text-amber-900 font-bold ${isMobile ? 'text-base py-3 px-3' : 'text-2xl py-5 px-8'} shadow-lg transform scale-110 rounded-lg border-2 border-yellow-500`
+                                                    ? `bg-yellow-300 text-black font-bold ${isMobile ? 'text-base py-3 px-3' : 'text-2xl py-5 px-8'} shadow-lg transform scale-110 rounded-lg border-2 border-yellow-500`
                                                     : isPast
-                                                        ? `text-amber-500 ${isMobile ? 'text-sm py-2' : 'text-xl py-4'} opacity-70`
-                                                        : `text-amber-700 ${isMobile ? 'text-sm py-2' : 'text-xl py-4'} opacity-90`
+                                                        ? `text-gray-500 ${isMobile ? 'text-sm py-2' : 'text-xl py-4'} opacity-70`
+                                                        : `text-black ${isMobile ? 'text-sm py-2' : 'text-xl py-4'} opacity-90`
                                                 }`}
                                             style={{
                                                 minHeight: isMobile ? '36px' : '60px',

@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useGameState } from "@/context/GameContext";
 
@@ -24,6 +25,51 @@ export default function MontirKecil1() {
     const { navigateTo, updateLevelMontirKecil } = useGameState();
     const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
     const [selectedShape, setSelectedShape] = useState<string | null>(null);
+    const [hasPlayedInstructions, setHasPlayedInstructions] = useState<boolean>(false);
+
+    // Effect untuk auto-play audio instruksi saat komponen pertama kali dimount
+    useEffect(() => {
+        let isCancelled = false;
+        let currentAudio: HTMLAudioElement | null = null;
+
+        const playInstructions = async () => {
+            if (!hasPlayedInstructions && !isCancelled) {
+                // Delay sedikit untuk memastikan komponen sudah fully loaded
+                setTimeout(async () => {
+                    if (!isCancelled && !hasPlayedInstructions) {
+                        try {
+                            currentAudio = new Audio('/audio/Montir kecil mobil.m4a');
+                            currentAudio.volume = 0.7;
+                            currentAudio.preload = 'auto';
+
+                            const playPromise = currentAudio.play();
+                            if (playPromise !== undefined) {
+                                await playPromise;
+                                console.log('Audio instruksi berhasil diputar');
+                                if (!isCancelled) {
+                                    setHasPlayedInstructions(true);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('Auto-play audio diblokir atau gagal:', error);
+                        }
+                    }
+                }, 1000);
+            }
+        };
+
+        playInstructions();
+
+        // Cleanup function untuk mencegah memory leak dan double play
+        return () => {
+            isCancelled = true;
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+        };
+    }, []); // Empty dependency array agar hanya dijalankan sekali saat mount
 
     const handleBackToMenu = () => {
         navigateTo("menu-game");
@@ -138,7 +184,7 @@ export default function MontirKecil1() {
                 {gameState === 'correct' && (
                     <div className="mb-6 text-center">
                         <div className="bg-green-500 text-white px-8 py-4 rounded-full text-2xl font-bold shadow-lg animate-bounce">
-                            Good Job! 🎉
+                            Kerja Bagus! 🎉
                         </div>
                     </div>
                 )}
@@ -146,7 +192,7 @@ export default function MontirKecil1() {
                 {gameState === 'wrong' && (
                     <div className="mb-6 text-center">
                         <div className="bg-red-500 text-white px-8 py-4 rounded-full text-2xl font-bold shadow-lg animate-pulse">
-                            Try Again! 🤔
+                            Coba Lagi! 🤔
                         </div>
                     </div>
                 )}

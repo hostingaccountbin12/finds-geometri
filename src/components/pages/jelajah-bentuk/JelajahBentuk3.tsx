@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAudio } from "@/context/AudioContext";
 import { useGameState } from "@/context/GameContext";
-import { Check, X } from "lucide-react";
+import { Check, X, Heart } from "lucide-react";
 import Home from "@/assets/icons/Home.webp";
 
 import BgMenu from "@/assets/icons/BgMenu.webp";
@@ -18,6 +18,7 @@ interface Shape {
     id: number;
     size: number;
     color: string;
+    type: 'circle' | 'heart';
     correctOrder: number;
 }
 
@@ -25,32 +26,56 @@ interface Feedback {
     [key: number]: boolean;
 }
 
-// Komponen untuk Persegi
-const Square: React.FC<{
+// Komponen untuk Lingkaran
+const Circle: React.FC<{
     size: number;
     color: string;
     isDragging?: boolean;
     style?: React.CSSProperties;
 }> = ({ size, color, isDragging = false, style }) => (
     <div
-        className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-3 scale-110' : 'hover:scale-105'}`}
+        className={`inline-block transition-all duration-300 rounded-full ${isDragging ? 'rotate-3 scale-110' : 'hover:scale-105'}`}
         style={{
             width: size,
             height: size,
             backgroundColor: color,
             border: '2px solid #2D3748',
-            borderRadius: '8px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             ...style
         }}
     />
 );
 
-export default function JelajahBentuk2(): JSX.Element {
+// Komponen untuk Heart/Love
+const HeartShape: React.FC<{
+    size: number;
+    color: string;
+    isDragging?: boolean;
+    style?: React.CSSProperties;
+}> = ({ size, color, isDragging = false, style }) => (
+    <div
+        className={`inline-flex items-center justify-center transition-all duration-300 ${isDragging ? 'rotate-3 scale-110' : 'hover:scale-105'}`}
+        style={{
+            width: size,
+            height: size,
+            ...style
+        }}
+    >
+        <Heart
+            size={size * 0.8}
+            fill={color}
+            color={color}
+            style={{
+                filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2))'
+            }}
+        />
+    </div>
+);
+
+export default function JelajahBentuk3(): JSX.Element {
     const { setComponentVolume } = useAudio();
     const { navigateTo, updateLevelJelajahBentuk, state } = useGameState();
     const [isMobileLandscape, setIsMobileLandscape] = useState<boolean>(false);
-    const [hasPlayedInstructions, setHasPlayedInstructions] = useState<boolean>(false);
 
     // Game state
     const [availableShapes, setAvailableShapes] = useState<Shape[]>([]);
@@ -59,37 +84,20 @@ export default function JelajahBentuk2(): JSX.Element {
     const [feedback, setFeedback] = useState<Feedback>({});
     const [completedCount, setCompletedCount] = useState<number>(0);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
-    const [gameLevel] = useState<number>(2);
+    const [gameLevel] = useState<number>(3);
 
-    // Ukuran dan warna untuk persegi (4 bentuk) - urut dari TERBESAR ke TERKECIL
+    // Audio state
+    const [instructionAudio, setInstructionAudio] = useState<HTMLAudioElement | null>(null);
+    const [hasPlayedInstruction, setHasPlayedInstruction] = useState<boolean>(false);
+
+    // Konfigurasi bentuk: 2 bulat dan 2 love - urut dari TERKECIL ke TERBESAR
     const shapeConfigs: { [key: number]: Shape[] } = {
-        2: [
-            { id: 1, size: 110, color: "#FF6B6B", correctOrder: 1 }, // Terbesar = urutan 1
-            { id: 2, size: 90, color: "#4ECDC4", correctOrder: 2 },  // Kedua terbesar = urutan 2
-            { id: 3, size: 70, color: "#45B7D1", correctOrder: 3 },  // Ketiga terbesar = urutan 3
-            { id: 4, size: 50, color: "#96CEB4", correctOrder: 4 },  // Terkecil = urutan 4
+        3: [
+            { id: 1, size: 30, color: "#FF6B6B", type: 'circle', correctOrder: 1 }, // Terkecil bulat = urutan 1
+            { id: 2, size: 80, color: "#E74C3C", type: 'heart', correctOrder: 2 },  // Terkecil love = urutan 2
+            { id: 3, size: 80, color: "#4ECDC4", type: 'circle', correctOrder: 3 }, // Terbesar bulat = urutan 3
+            { id: 4, size: 120, color: "#C0392B", type: 'heart', correctOrder: 4 },  // Terbesar love = urutan 4
         ]
-    };
-
-    // Function to play instructions audio from source file
-    const playInstructionsAudio = async (): Promise<void> => {
-        try {
-            // Ganti path ini dengan lokasi file audio instruksi Anda
-            const audio = new Audio('/audio/Urutkan bentuk besar-kecil.m4a');
-            audio.volume = 0.7;
-            audio.preload = 'auto';
-
-            // Promise untuk menangani loading dan playing
-            const playPromise = audio.play();
-
-            if (playPromise !== undefined) {
-                await playPromise;
-                console.log('Audio instruksi berhasil diputar');
-            }
-        } catch (error) {
-            console.log('Auto-play audio diblokir atau gagal:', error);
-            // Bisa tambahkan fallback atau notifikasi ke user jika diperlukan
-        }
     };
 
     // Function to check if device is in mobile landscape mode
@@ -111,13 +119,56 @@ export default function JelajahBentuk2(): JSX.Element {
 
     // Initialize game
     const initializeGame = (): void => {
-        const levelShapes = shapeConfigs[gameLevel] || shapeConfigs[2];
+        const levelShapes = shapeConfigs[gameLevel] || shapeConfigs[3];
         setAvailableShapes(shuffleArray(levelShapes));
         setSortedShapes([]);
         setFeedback({});
         setCompletedCount(0);
         setShowSuccess(false);
     };
+
+    // Initialize and play instruction audio
+    const initializeInstructionAudio = (): void => {
+        try {
+            // Ganti dengan path audio instruksi Anda
+            const audio = new Audio('/audio/Urutkan bentuk kecil - besar.m4a');
+            audio.volume = 0.7;
+            setInstructionAudio(audio);
+
+            // Auto play instruction audio
+            const playInstruction = async () => {
+                try {
+                    await audio.play();
+                    setHasPlayedInstruction(true);
+                } catch (error) {
+                    console.log('Auto-play prevented by browser:', error);
+                    // Fallback: play on first user interaction
+                    const handleFirstInteraction = async () => {
+                        if (!hasPlayedInstruction) {
+                            try {
+                                await audio.play();
+                                setHasPlayedInstruction(true);
+                                document.removeEventListener('click', handleFirstInteraction);
+                                document.removeEventListener('touchstart', handleFirstInteraction);
+                            } catch (err) {
+                                console.error('Failed to play instruction audio:', err);
+                            }
+                        }
+                    };
+
+                    document.addEventListener('click', handleFirstInteraction);
+                    document.addEventListener('touchstart', handleFirstInteraction);
+                }
+            };
+
+            // Small delay to ensure component is fully loaded
+            setTimeout(playInstruction, 500);
+
+        } catch (error) {
+            console.error('Error initializing instruction audio:', error);
+        }
+    };
+
 
     useEffect(() => {
         checkMobileLandscape();
@@ -128,36 +179,34 @@ export default function JelajahBentuk2(): JSX.Element {
     useEffect(() => {
         setComponentVolume(0.7);
         initializeGame();
-    }, [setComponentVolume, gameLevel]);
 
-    // Effect untuk auto-play audio instruksi saat komponen pertama kali dimount
-    useEffect(() => {
-        const playInstructions = async () => {
-            if (!hasPlayedInstructions) {
-                // Delay sedikit untuk memastikan komponen sudah fully loaded
-                setTimeout(async () => {
-                    await playInstructionsAudio();
-                    setHasPlayedInstructions(true);
-                }, 1000); // Delay 1 detik untuk memastikan halaman sudah siap
+        // Initialize instruction audio on component mount
+        if (!hasPlayedInstruction) {
+            initializeInstructionAudio();
+        }
+
+        // Cleanup function
+        return () => {
+            if (instructionAudio) {
+                instructionAudio.pause();
+                instructionAudio.currentTime = 0;
             }
         };
+    }, [setComponentVolume, gameLevel]);
 
-        playInstructions();
-    }, []); // Empty dependency array agar hanya dijalankan sekali saat mount
-
-    // Check if game is completed (4 persegi)
+    // Check if game is completed (4 bentuk)
     useEffect(() => {
         if (completedCount === 4) {
             setShowSuccess(true);
 
             // Update level jika diperlukan
-            if (state.levelJelajahBentuk === 2) {
-                updateLevelJelajahBentuk(3);
+            if (state.levelJelajahBentuk === 3) {
+                updateLevelJelajahBentuk(4);
             }
 
-            // Auto navigate ke jelajah-bentuk-3 setelah 3 detik
+            // Auto navigate ke jelajah-bentuk-4 setelah 3 detik
             const timer = setTimeout(() => {
-                navigateTo("jelajah-bentuk-3");
+                navigateTo("jelajah-bentuk-4");
             }, 3000);
 
             return () => clearTimeout(timer);
@@ -240,6 +289,27 @@ export default function JelajahBentuk2(): JSX.Element {
         setDraggedShape(null);
     };
 
+    // Render shape berdasarkan tipe
+    const renderShape = (shape: Shape, isDragging: boolean = false) => {
+        if (shape.type === 'circle') {
+            return (
+                <Circle
+                    size={shape.size}
+                    color={shape.color}
+                    isDragging={isDragging}
+                />
+            );
+        } else {
+            return (
+                <HeartShape
+                    size={shape.size}
+                    color={shape.color}
+                    isDragging={isDragging}
+                />
+            );
+        }
+    };
+
     return (
         <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
             {/* Background Image */}
@@ -300,7 +370,7 @@ export default function JelajahBentuk2(): JSX.Element {
                         Urutkan Bentuk
                     </h1>
                     <p className="text-xl drop-shadow-md">
-                        Urutkan bentuk di bawah ini mulai dari terbesar hingga terkecil secara berurutan
+                        Urutkan bentuk bulat dan hati mulai dari terkecil hingga terbesar secara berurutan
                     </p>
                 </div>
 
@@ -320,11 +390,7 @@ export default function JelajahBentuk2(): JSX.Element {
                                     onDragStart={(e) => handleDragStart(e, shape)}
                                     className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
                                 >
-                                    <Square
-                                        size={shape.size}
-                                        color={shape.color}
-                                        isDragging={draggedShape?.id === shape.id}
-                                    />
+                                    {renderShape(shape, draggedShape?.id === shape.id)}
 
                                     {/* Feedback Icons */}
                                     {feedback[shape.id] !== undefined && (
@@ -349,7 +415,7 @@ export default function JelajahBentuk2(): JSX.Element {
                     {/* Sorted Area */}
                     <div className="bg-white/80 rounded-xl p-6 backdrop-blur-sm min-h-[200px] flex-1">
                         <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">
-                            Urutkan dari yang terbesar hingga terkecil
+                            Urutkan dari yang terkecil hingga terbesar
                         </h2>
                         <div
                             className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 ${completedCount === 4 ? 'border-green-500 bg-green-100' : 'border-blue-400 bg-blue-50'
@@ -364,18 +430,14 @@ export default function JelajahBentuk2(): JSX.Element {
                                     onDragStart={(e) => handleDragStart(e, shape)}
                                     className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
                                 >
-                                    <Square
-                                        size={shape.size}
-                                        color={shape.color}
-                                        isDragging={draggedShape?.id === shape.id}
-                                    />
+                                    {renderShape(shape, draggedShape?.id === shape.id)}
                                 </div>
                             ))}
 
                             {sortedShapes.length === 0 && (
                                 <div className="text-gray-500 text-center">
-                                    <p className="text-lg font-semibold">Seret persegi di sini</p>
-                                    <p className="text-sm">Mulai dari yang terbesar</p>
+                                    <p className="text-lg font-semibold">Seret bentuk di sini</p>
+                                    <p className="text-sm">Mulai dari yang terkecil</p>
                                 </div>
                             )}
                         </div>
@@ -390,7 +452,7 @@ export default function JelajahBentuk2(): JSX.Element {
                         <div className="text-8xl mb-6">🎉</div>
                         <h2 className="text-6xl font-bold text-green-600 mb-4">Kerja Bagus!</h2>
                         <p className="text-2xl text-gray-700 mb-6">
-                            Kamu berhasil mengurutkan semua persegi!
+                            Kamu berhasil mengurutkan semua bentuk!
                         </p>
                         <div className="flex items-center justify-center gap-2 text-lg text-gray-600">
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500"></div>

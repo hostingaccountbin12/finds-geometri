@@ -20,7 +20,7 @@ export default function PetunjukBermain1() {
 
   useEffect(() => {
     // Buat audio dan mulai play
-    const audio = new Audio("/audio/Petunjuk bermain-1.m4a");
+    const audio = new Audio("/audio/Petunjuk1-6.m4a");
     audioRef.current = audio;
     audio.play().catch((e) => {
       console.warn("Audio autoplay diblokir oleh browser:", e);
@@ -147,33 +147,26 @@ export default function PetunjukBermain1() {
 
                 <div className="text-lg font-bold">2.</div>
                 <div className="text-lg font-bold">
-                  Klik angka secara berurutan untuk memulai permainan
-                </div>
-
-                <div className="text-lg font-bold">2.</div>
-                <div className="text-lg font-bold">
-                  Klik angka secara berurutan untuk memulai permainan
+                  Pilih permainan yang ingin dimainkan 
                 </div>
 
                 <div className="text-lg font-bold">3.</div>
                 <div className="text-lg font-bold">
-                  Selesaikan tantangan hingga akhir. Setiap tantangan
-                  menghasilkan uang yang dapat dibelanjakan pada toko barang
+                  {`Klik “Ayo Menyanyi” untuk memulai lagu dan bernyanyi bersama`}
                 </div>
 
                 <div className="text-lg font-bold">4.</div>
                 <div className="text-lg font-bold flex items-center">
-                  Klik untuk membuka tantangan
+                  {`Klik “Urutkan Bentuk” untuk bermain mengurutkan bentuk geometri`}
                 </div>
 
                 <div className="text-lg font-bold">5.</div>
                 <div className="text-lg font-bold flex items-center">
-                  Setiap tantangan membutuhkan energi. Tambahkan energi dengan
-                  membeli makanan pada toko barang
+                  {`Klik “Dunia Bentuk” untuk bermain mencocokkan gambar dengan bentuk geometri`}
                 </div>
                 <div className="text-lg font-bold">6.</div>
                 <div className="text-lg font-bold flex items-center">
-                  Klik untuk membuka toko barang
+                  {`Klik "Montir Kecil" untuk bermain mencari bentuk geometri yang hilang`}
                 </div>
               </div>
             </div>
@@ -291,17 +284,17 @@ export default function PetunjukBermain1() {
 
             <div className="text-3xl font-bold">4.</div>
             <div className="text-3xl font-bold">
-              {`Klik “Temukan Aku” untuk bermain menemukan bentuk geometri sesuai perintah`}
+              {`Klik “Urutkan Bentuk” untuk bermain mengurutkan bentuk geometri`}
             </div>
 
             <div className="text-3xl font-bold">5.</div>
             <div className="text-3xl font-bold flex items-center">
-              {`Klik “Cocokkan Aku” untuk bermain mencocokkan gambar dengan bentuk geometri`}
+              {`Klik “Dunia Bentuk” untuk bermain mencocokkan gambar dengan bentuk geometri`}
             </div>
 
             <div className="text-3xl font-bold">6.</div>
             <div className="text-3xl font-bold flex items-center">
-              {`Klik “Mini Games” untuk bermain mencocokkan gambar berdasarkan bentuk geometri yang sama`}
+              {`Klik "Montir Kecil" untuk bermain mencari bentuk geometri yang hilang`}
             </div>
           </div>
         </div>

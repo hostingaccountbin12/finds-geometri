@@ -272,7 +272,7 @@ export default function DuniaBentuk5(): JSX.Element {
             {/* Success Message - Game Completion */}
             {showSuccess && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-                    <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-3xl p-12 text-center shadow-2xl border-8 border-yellow-700 max-w-lg w-full mx-4">
+                    <div className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-3xl p-12 text-center shadow-2xl border-8 border-purple-600 max-w-lg w-full mx-4">
                         {/* Trophy Icon */}
                         <div className="text-8xl mb-6">🏆</div>
 
@@ -283,7 +283,7 @@ export default function DuniaBentuk5(): JSX.Element {
 
                         {/* Completion Message */}
                         <div className="bg-white bg-opacity-90 rounded-2xl p-6 mb-6">
-                            <h3 className="text-3xl font-bold text-yellow-700 mb-3">
+                            <h3 className="text-3xl font-bold text-purple-600 mb-3">
                                 🎉 Game Dunia Bentuk Selesai! 🎉
                             </h3>
                             <p className="text-lg text-gray-700 mb-2">
@@ -294,19 +294,10 @@ export default function DuniaBentuk5(): JSX.Element {
                             </p>
                         </div>
 
-                        {/* Certificate Badge */}
-                        {/* <div className="bg-white bg-opacity-20 rounded-xl p-4 mb-8 border-2 border-white border-dashed">
-                                <div className="flex items-center justify-center gap-2 text-white">
-                                    <span className="text-2xl">⭐</span>
-                                    <span className="text-lg font-semibold">Sertifikat Master Bentuk</span>
-                                    <span className="text-2xl">⭐</span>
-                                </div>
-                            </div> */}
-
                         {/* Back to Menu Button */}
                         <button
                             onClick={handleGameCompletion}
-                            className="bg-white text-yellow-700 font-bold text-xl px-8 py-4 rounded-full hover:bg-yellow-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            className="bg-white text-purple-600 font-bold text-xl px-8 py-4 rounded-full hover:bg-purple-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                             🏠 Kembali ke Menu
                         </button>

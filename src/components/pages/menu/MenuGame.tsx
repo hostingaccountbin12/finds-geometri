@@ -50,8 +50,12 @@ export default function MenuGame() {
           navigateTo('jelajah-bentuk-1');
         } else if (jelajahBentukLevel === 2) {
           navigateTo('jelajah-bentuk-2');
-        } else if (jelajahBentukLevel >= 3) {
+        } else if (jelajahBentukLevel === 3) {
           navigateTo('jelajah-bentuk-3');
+        } else if (jelajahBentukLevel === 4) {
+          navigateTo('jelajah-bentuk-4')
+        } else if (jelajahBentukLevel >= 5) {
+          navigateTo('jelajah-bentuk-5')
         }
         break;
       case 'dunia-bentuk':
@@ -119,28 +123,28 @@ export default function MenuGame() {
     {
       id: 'dunia-bentuk',
       icon: DuniaBentuk,
-      width: 270,
+      width: 250,
       level: state.levelDuniaBentuk,
       isCompleted: state.isDuniaBentukFinished
     },
     {
       id: 'montir-kecil',
       icon: MontirKecil,
-      width: 210,
+      width: 190,
       level: state.levelMontirKecil,
       isCompleted: state.isMontirKecilFinished
     },
     {
       id: 'mari-berkreasi',
       icon: MariBerkreasi,
-      width: 210,
+      width: 190,
       level: null,
       isCompleted: state.isMariBekreasFinished
     },
     {
       id: 'mini-games',
       icon: MiniGames,
-      width: 280,
+      width: 290,
       level: state.levelMiniGames,
       isCompleted: state.isMiniGamesFinished
     }

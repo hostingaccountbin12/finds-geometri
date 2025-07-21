@@ -18,6 +18,7 @@ interface Shape {
     id: number;
     size: number;
     color: string;
+    type: 'star' | 'trapezoid';
     correctOrder: number;
 }
 
@@ -25,8 +26,8 @@ interface Feedback {
     [key: number]: boolean;
 }
 
-// Komponen untuk Persegi
-const Square: React.FC<{
+// Komponen untuk Bintang
+const Star: React.FC<{
     size: number;
     color: string;
     isDragging?: boolean;
@@ -37,20 +38,40 @@ const Square: React.FC<{
         style={{
             width: size,
             height: size,
+            clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
             backgroundColor: color,
             border: '2px solid #2D3748',
-            borderRadius: '8px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             ...style
         }}
     />
 );
 
-export default function JelajahBentuk2(): JSX.Element {
+// Komponen untuk Trapesium
+const Trapezoid: React.FC<{
+    size: number;
+    color: string;
+    isDragging?: boolean;
+    style?: React.CSSProperties;
+}> = ({ size, color, isDragging = false, style }) => (
+    <div
+        className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-3 scale-110' : 'hover:scale-105'}`}
+        style={{
+            width: size,
+            height: size * 0.7, // Tinggi trapesium sedikit lebih pendek
+            clipPath: 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)',
+            backgroundColor: color,
+            border: '2px solid #2D3748',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            ...style
+        }}
+    />
+);
+
+export default function JelajahBentuk4(): JSX.Element {
     const { setComponentVolume } = useAudio();
     const { navigateTo, updateLevelJelajahBentuk, state } = useGameState();
     const [isMobileLandscape, setIsMobileLandscape] = useState<boolean>(false);
-    const [hasPlayedInstructions, setHasPlayedInstructions] = useState<boolean>(false);
 
     // Game state
     const [availableShapes, setAvailableShapes] = useState<Shape[]>([]);
@@ -59,37 +80,20 @@ export default function JelajahBentuk2(): JSX.Element {
     const [feedback, setFeedback] = useState<Feedback>({});
     const [completedCount, setCompletedCount] = useState<number>(0);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
-    const [gameLevel] = useState<number>(2);
+    const [gameLevel] = useState<number>(3);
 
-    // Ukuran dan warna untuk persegi (4 bentuk) - urut dari TERBESAR ke TERKECIL
+    // Audio state
+    const [instructionAudio, setInstructionAudio] = useState<HTMLAudioElement | null>(null);
+    const [hasPlayedInstruction, setHasPlayedInstruction] = useState<boolean>(false);
+
+    // Konfigurasi bentuk: 2 bintang dan 2 trapesium - urut dari TERBESAR ke TERKECIL
     const shapeConfigs: { [key: number]: Shape[] } = {
-        2: [
-            { id: 1, size: 110, color: "#FF6B6B", correctOrder: 1 }, // Terbesar = urutan 1
-            { id: 2, size: 90, color: "#4ECDC4", correctOrder: 2 },  // Kedua terbesar = urutan 2
-            { id: 3, size: 70, color: "#45B7D1", correctOrder: 3 },  // Ketiga terbesar = urutan 3
-            { id: 4, size: 50, color: "#96CEB4", correctOrder: 4 },  // Terkecil = urutan 4
+        3: [
+            { id: 1, size: 120, color: "#FF6B6B", type: 'star', correctOrder: 1 },      // Terbesar bintang = urutan 1
+            { id: 2, size: 100, color: "#E74C3C", type: 'trapezoid', correctOrder: 2 }, // Terbesar trapesium = urutan 2
+            { id: 3, size: 80, color: "#4ECDC4", type: 'star', correctOrder: 3 },       // Terkecil bintang = urutan 3
+            { id: 4, size: 50, color: "#C0392B", type: 'trapezoid', correctOrder: 4 },  // Terkecil trapesium = urutan 4
         ]
-    };
-
-    // Function to play instructions audio from source file
-    const playInstructionsAudio = async (): Promise<void> => {
-        try {
-            // Ganti path ini dengan lokasi file audio instruksi Anda
-            const audio = new Audio('/audio/Urutkan bentuk besar-kecil.m4a');
-            audio.volume = 0.7;
-            audio.preload = 'auto';
-
-            // Promise untuk menangani loading dan playing
-            const playPromise = audio.play();
-
-            if (playPromise !== undefined) {
-                await playPromise;
-                console.log('Audio instruksi berhasil diputar');
-            }
-        } catch (error) {
-            console.log('Auto-play audio diblokir atau gagal:', error);
-            // Bisa tambahkan fallback atau notifikasi ke user jika diperlukan
-        }
     };
 
     // Function to check if device is in mobile landscape mode
@@ -111,12 +115,54 @@ export default function JelajahBentuk2(): JSX.Element {
 
     // Initialize game
     const initializeGame = (): void => {
-        const levelShapes = shapeConfigs[gameLevel] || shapeConfigs[2];
+        const levelShapes = shapeConfigs[gameLevel] || shapeConfigs[3];
         setAvailableShapes(shuffleArray(levelShapes));
         setSortedShapes([]);
         setFeedback({});
         setCompletedCount(0);
         setShowSuccess(false);
+    };
+
+    // Initialize and play instruction audio
+    const initializeInstructionAudio = (): void => {
+        try {
+            // Ganti dengan path audio instruksi Anda
+            const audio = new Audio('/audio/Urutkan bentuk besar-kecil.m4a');
+            audio.volume = 0.7;
+            setInstructionAudio(audio);
+
+            // Auto play instruction audio
+            const playInstruction = async () => {
+                try {
+                    await audio.play();
+                    setHasPlayedInstruction(true);
+                } catch (error) {
+                    console.log('Auto-play prevented by browser:', error);
+                    // Fallback: play on first user interaction
+                    const handleFirstInteraction = async () => {
+                        if (!hasPlayedInstruction) {
+                            try {
+                                await audio.play();
+                                setHasPlayedInstruction(true);
+                                document.removeEventListener('click', handleFirstInteraction);
+                                document.removeEventListener('touchstart', handleFirstInteraction);
+                            } catch (err) {
+                                console.error('Failed to play instruction audio:', err);
+                            }
+                        }
+                    };
+
+                    document.addEventListener('click', handleFirstInteraction);
+                    document.addEventListener('touchstart', handleFirstInteraction);
+                }
+            };
+
+            // Small delay to ensure component is fully loaded
+            setTimeout(playInstruction, 500);
+
+        } catch (error) {
+            console.error('Error initializing instruction audio:', error);
+        }
     };
 
     useEffect(() => {
@@ -128,36 +174,34 @@ export default function JelajahBentuk2(): JSX.Element {
     useEffect(() => {
         setComponentVolume(0.7);
         initializeGame();
-    }, [setComponentVolume, gameLevel]);
 
-    // Effect untuk auto-play audio instruksi saat komponen pertama kali dimount
-    useEffect(() => {
-        const playInstructions = async () => {
-            if (!hasPlayedInstructions) {
-                // Delay sedikit untuk memastikan komponen sudah fully loaded
-                setTimeout(async () => {
-                    await playInstructionsAudio();
-                    setHasPlayedInstructions(true);
-                }, 1000); // Delay 1 detik untuk memastikan halaman sudah siap
+        // Initialize instruction audio on component mount
+        if (!hasPlayedInstruction) {
+            initializeInstructionAudio();
+        }
+
+        // Cleanup function
+        return () => {
+            if (instructionAudio) {
+                instructionAudio.pause();
+                instructionAudio.currentTime = 0;
             }
         };
+    }, [setComponentVolume, gameLevel]);
 
-        playInstructions();
-    }, []); // Empty dependency array agar hanya dijalankan sekali saat mount
-
-    // Check if game is completed (4 persegi)
+    // Check if game is completed (4 bentuk)
     useEffect(() => {
         if (completedCount === 4) {
             setShowSuccess(true);
 
             // Update level jika diperlukan
-            if (state.levelJelajahBentuk === 2) {
-                updateLevelJelajahBentuk(3);
+            if (state.levelJelajahBentuk === 4) {
+                updateLevelJelajahBentuk(5);
             }
 
-            // Auto navigate ke jelajah-bentuk-3 setelah 3 detik
+            // Auto navigate ke jelajah-bentuk-4 setelah 3 detik
             const timer = setTimeout(() => {
-                navigateTo("jelajah-bentuk-3");
+                navigateTo("jelajah-bentuk-5");
             }, 3000);
 
             return () => clearTimeout(timer);
@@ -240,6 +284,27 @@ export default function JelajahBentuk2(): JSX.Element {
         setDraggedShape(null);
     };
 
+    // Render shape berdasarkan tipe
+    const renderShape = (shape: Shape, isDragging: boolean = false) => {
+        if (shape.type === 'star') {
+            return (
+                <Star
+                    size={shape.size}
+                    color={shape.color}
+                    isDragging={isDragging}
+                />
+            );
+        } else {
+            return (
+                <Trapezoid
+                    size={shape.size}
+                    color={shape.color}
+                    isDragging={isDragging}
+                />
+            );
+        }
+    };
+
     return (
         <div className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
             {/* Background Image */}
@@ -300,7 +365,7 @@ export default function JelajahBentuk2(): JSX.Element {
                         Urutkan Bentuk
                     </h1>
                     <p className="text-xl drop-shadow-md">
-                        Urutkan bentuk di bawah ini mulai dari terbesar hingga terkecil secara berurutan
+                        Urutkan bentuk bintang dan trapesium mulai dari terbesar hingga terkecil secara berurutan
                     </p>
                 </div>
 
@@ -320,11 +385,7 @@ export default function JelajahBentuk2(): JSX.Element {
                                     onDragStart={(e) => handleDragStart(e, shape)}
                                     className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
                                 >
-                                    <Square
-                                        size={shape.size}
-                                        color={shape.color}
-                                        isDragging={draggedShape?.id === shape.id}
-                                    />
+                                    {renderShape(shape, draggedShape?.id === shape.id)}
 
                                     {/* Feedback Icons */}
                                     {feedback[shape.id] !== undefined && (
@@ -364,17 +425,13 @@ export default function JelajahBentuk2(): JSX.Element {
                                     onDragStart={(e) => handleDragStart(e, shape)}
                                     className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
                                 >
-                                    <Square
-                                        size={shape.size}
-                                        color={shape.color}
-                                        isDragging={draggedShape?.id === shape.id}
-                                    />
+                                    {renderShape(shape, draggedShape?.id === shape.id)}
                                 </div>
                             ))}
 
                             {sortedShapes.length === 0 && (
                                 <div className="text-gray-500 text-center">
-                                    <p className="text-lg font-semibold">Seret persegi di sini</p>
+                                    <p className="text-lg font-semibold">Seret bentuk di sini</p>
                                     <p className="text-sm">Mulai dari yang terbesar</p>
                                 </div>
                             )}
@@ -390,7 +447,7 @@ export default function JelajahBentuk2(): JSX.Element {
                         <div className="text-8xl mb-6">🎉</div>
                         <h2 className="text-6xl font-bold text-green-600 mb-4">Kerja Bagus!</h2>
                         <p className="text-2xl text-gray-700 mb-6">
-                            Kamu berhasil mengurutkan semua persegi!
+                            Kamu berhasil mengurutkan semua bentuk!
                         </p>
                         <div className="flex items-center justify-center gap-2 text-lg text-gray-600">
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500"></div>
