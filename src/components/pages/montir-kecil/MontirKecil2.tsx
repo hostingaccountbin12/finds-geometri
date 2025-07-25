@@ -39,7 +39,7 @@ export default function MontirKecil2() {
                         if (!isCancelled && !hasPlayedInstructions) {
                             try {
                                 currentAudio = new Audio('/audio/Montir kecil kereta.m4a');
-                                currentAudio.volume = 0.7;
+                                currentAudio.volume = 1;
                                 currentAudio.preload = 'auto';
     
                                 const playPromise = currentAudio.play();

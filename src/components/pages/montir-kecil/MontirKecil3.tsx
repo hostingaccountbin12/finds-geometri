@@ -39,7 +39,7 @@ export default function MontirKecil3() {
                         if (!isCancelled && !hasPlayedInstructions) {
                             try {
                                 currentAudio = new Audio('/audio/Montir kecil truk.m4a');
-                                currentAudio.volume = 0.7;
+                                currentAudio.volume = 1;
                                 currentAudio.preload = 'auto';
     
                                 const playPromise = currentAudio.play();

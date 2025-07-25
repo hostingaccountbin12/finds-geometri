@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useGameState } from "@/context/GameContext";
 
@@ -10,12 +11,12 @@ import Pohon from "@/assets/icons/Pohon.png";
 import FooterMenu from "@/assets/icons/FooterMenu.png";
 import Home from "@/assets/icons/Home.webp";
 
-import JelajahBentuk from "@/assets/icons/JelajahBentuk.gif"
-import AyoMenyanyi from "@/assets/icons/AyoMenyanyi.gif"
-import MiniGames from "@/assets/icons/MiniGames.gif"
-import MontirKecil from "@/assets/icons/MontirKecil.gif"
-import MariBerkreasi from "@/assets/icons/MariBerkreasi.gif"
-import DuniaBentuk from "@/assets/icons/DuniaBentuk.gif"
+import JelajahBentuk from "@/assets/icons/JelajahBentuk.gif";
+import AyoMenyanyi from "@/assets/icons/AyoMenyanyi.gif";
+import MiniGames from "@/assets/icons/MiniGames.gif";
+import MontirKecil from "@/assets/icons/MontirKecil.gif";
+import MariBerkreasi from "@/assets/icons/MariBerkreasi.gif";
+import DuniaBentuk from "@/assets/icons/DuniaBentuk.gif";
 
 // Certificate/Trophy Icon Component
 const CertificateIcon = () => (
@@ -33,7 +34,14 @@ const CertificateIcon = () => (
 );
 
 export default function MenuGame() {
-  const { state, navigateTo } = useGameState();
+  const { state, navigateTo, setPlayingInstructionDuniaBentuk } =
+    useGameState();
+
+  useEffect(() => {
+    if (state.isPlayingInstructionDuniaBentuk) {
+      setPlayingInstructionDuniaBentuk(false);
+    }
+  }, [state.isPlayingInstructionDuniaBentuk, setPlayingInstructionDuniaBentuk]);
 
   const handleBackToMenu = () => {
     navigateTo("menu");
@@ -41,113 +49,113 @@ export default function MenuGame() {
 
   const handleMenuClick = (menuType: any) => {
     switch (menuType) {
-      case 'ayo-menyanyi':
-        navigateTo('ayo-menyanyi');
+      case "ayo-menyanyi":
+        navigateTo("ayo-menyanyi");
         break;
-      case 'jelajah-bentuk':
+      case "jelajah-bentuk":
         const jelajahBentukLevel = state.levelJelajahBentuk;
         if (jelajahBentukLevel === 1) {
-          navigateTo('jelajah-bentuk-1');
+          navigateTo("jelajah-bentuk-1");
         } else if (jelajahBentukLevel === 2) {
-          navigateTo('jelajah-bentuk-2');
+          navigateTo("jelajah-bentuk-2");
         } else if (jelajahBentukLevel === 3) {
-          navigateTo('jelajah-bentuk-3');
+          navigateTo("jelajah-bentuk-3");
         } else if (jelajahBentukLevel === 4) {
-          navigateTo('jelajah-bentuk-4')
+          navigateTo("jelajah-bentuk-4");
         } else if (jelajahBentukLevel >= 5) {
-          navigateTo('jelajah-bentuk-5')
+          navigateTo("jelajah-bentuk-5");
         }
         break;
-      case 'dunia-bentuk':
+      case "dunia-bentuk":
         const duniaBentukLevel = state.levelDuniaBentuk;
         if (duniaBentukLevel === 1) {
-          navigateTo('dunia-bentuk-1');
+          navigateTo("dunia-bentuk-1");
         } else if (duniaBentukLevel === 2) {
-          navigateTo('dunia-bentuk-2');
+          navigateTo("dunia-bentuk-2");
         } else if (duniaBentukLevel === 3) {
-          navigateTo('dunia-bentuk-3');
+          navigateTo("dunia-bentuk-3");
         } else if (duniaBentukLevel === 4) {
-          navigateTo('dunia-bentuk-4')
+          navigateTo("dunia-bentuk-4");
         } else if (duniaBentukLevel >= 5) {
-          navigateTo('dunia-bentuk-5')
+          navigateTo("dunia-bentuk-5");
         }
         break;
-      case 'montir-kecil':
+      case "montir-kecil":
         const montirKecilLevel = state.levelMontirKecil;
         if (montirKecilLevel === 1) {
-          navigateTo('montir-kecil-1');
+          navigateTo("montir-kecil-1");
         } else if (montirKecilLevel === 2) {
-          navigateTo('montir-kecil-2');
+          navigateTo("montir-kecil-2");
         } else if (montirKecilLevel === 3) {
-          navigateTo('montir-kecil-3');
+          navigateTo("montir-kecil-3");
         } else if (montirKecilLevel === 4) {
-          navigateTo('montir-kecil-4')
+          navigateTo("montir-kecil-4");
         } else if (montirKecilLevel >= 5) {
-          navigateTo('montir-kecil-5')
+          navigateTo("montir-kecil-5");
         }
         break;
-      case 'mari-berkreasi':
-        navigateTo('mari-berkreasi');
+      case "mari-berkreasi":
+        navigateTo("mari-berkreasi");
         break;
-      case 'mini-games':
+      case "mini-games":
         const miniGamesLevel = state.levelMiniGames;
         if (miniGamesLevel === 1) {
-          navigateTo('mini-games-1');
+          navigateTo("mini-games-1");
         } else if (miniGamesLevel === 2) {
-          navigateTo('mini-games-2');
+          navigateTo("mini-games-2");
         } else if (miniGamesLevel >= 3) {
-          navigateTo('mini-games-3');
+          navigateTo("mini-games-3");
         }
         break;
       default:
-        console.log('Menu not implemented yet');
+        console.log("Menu not implemented yet");
     }
   };
 
   // Menu items data with level indicators and completion status
   const menuItems = [
     {
-      id: 'ayo-menyanyi',
+      id: "ayo-menyanyi",
       icon: AyoMenyanyi,
       width: 270,
       level: null,
-      isCompleted: state.isAyoMenyanyiFinished
+      isCompleted: state.isAyoMenyanyiFinished,
     },
     {
-      id: 'jelajah-bentuk',
+      id: "jelajah-bentuk",
       icon: JelajahBentuk,
       width: 270,
       level: state.levelJelajahBentuk,
-      isCompleted: state.isJelajahBentukFinished
+      isCompleted: state.isJelajahBentukFinished,
     },
     {
-      id: 'dunia-bentuk',
+      id: "dunia-bentuk",
       icon: DuniaBentuk,
       width: 250,
       level: state.levelDuniaBentuk,
-      isCompleted: state.isDuniaBentukFinished
+      isCompleted: state.isDuniaBentukFinished,
     },
     {
-      id: 'montir-kecil',
+      id: "montir-kecil",
       icon: MontirKecil,
       width: 190,
       level: state.levelMontirKecil,
-      isCompleted: state.isMontirKecilFinished
+      isCompleted: state.isMontirKecilFinished,
     },
     {
-      id: 'mari-berkreasi',
+      id: "mari-berkreasi",
       icon: MariBerkreasi,
       width: 190,
       level: null,
-      isCompleted: state.isMariBekreasFinished
+      isCompleted: state.isMariBekreasFinished,
     },
     {
-      id: 'mini-games',
+      id: "mini-games",
       icon: MiniGames,
       width: 290,
       level: state.levelMiniGames,
-      isCompleted: state.isMiniGamesFinished
-    }
+      isCompleted: state.isMiniGamesFinished,
+    },
   ];
 
   return (
@@ -205,7 +213,7 @@ export default function MenuGame() {
             <div key={item.id} className="relative">
               <button
                 onClick={() => handleMenuClick(item.id)}
-                className={`transform transition-all duration-200 hover:scale-110 hover:shadow-2xl active:scale-95 relative ${item.isCompleted ? 'filter brightness-110' : ''
+                className={`transform transition-all duration-200 hover:scale-110 hover:shadow-2xl active:scale-95 relative ${item.isCompleted ? "filter brightness-110" : ""
                   }`}
               >
                 <Image

@@ -87,7 +87,8 @@ export default function DuniaBentuk1(): JSX.Element {
   const [feedback, setFeedback] = useState<Feedback>({});
   const [completedCount, setCompletedCount] = useState<number>(0);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
-  const { navigateTo, updateLevelDuniaBentuk, state } = useGameState();
+  const { navigateTo, updateLevelDuniaBentuk, state, setPlayingInstructionDuniaBentuk } = useGameState();
+  const { isPlayingInstructionDuniaBentuk } = state
 
   // Audio ref untuk kontrol audio
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -158,14 +159,21 @@ export default function DuniaBentuk1(): JSX.Element {
     navigateTo("menu-game");
   };
 
-  // Effect untuk memutar audio saat komponen pertama kali dimount
+  // Effect untuk mengontrol audio instruction berdasarkan state
   useEffect(() => {
     const playAudio = async () => {
       try {
-        if (audioRef.current) {
-          audioRef.current.volume = 0.9; // Set volume (0.0 - 1.0)
-          await audioRef.current.play();
+        // Logika 1: Jika isPlayingInstructionDuniaBentuk false, ubah menjadi true dan putar audio
+        if (!isPlayingInstructionDuniaBentuk) {
+          setPlayingInstructionDuniaBentuk(true);
+
+          if (audioRef.current) {
+            audioRef.current.volume = 0.9; // Set volume (0.0 - 1.0)
+            await audioRef.current.play();
+          }
         }
+        // Logika 2: Jika isPlayingInstructionDuniaBentuk true, tidak melakukan apa-apa
+        // (audio tidak diputar dan state tidak diubah)
       } catch (error) {
         console.log("Audio could not be played automatically:", error);
         // Audio mungkin diblokir oleh browser policy, biarkan user mengklik untuk memutar
@@ -181,7 +189,7 @@ export default function DuniaBentuk1(): JSX.Element {
         audioRef.current.currentTime = 0;
       }
     };
-  }, []);
+  }, []); // Dependency array kosong karena kita hanya ingin ini berjalan sekali saat mount
 
   // Effect to handle completion
   useEffect(() => {

@@ -81,7 +81,7 @@ export default function MiniGames1(): JSX.Element {
             audioRef.current.addEventListener('error', handleError);
 
             // Set volume (opsional, 0.0 - 1.0)
-            audioRef.current.volume = 0.7;
+            audioRef.current.volume = 1;
         }
 
         // Cleanup

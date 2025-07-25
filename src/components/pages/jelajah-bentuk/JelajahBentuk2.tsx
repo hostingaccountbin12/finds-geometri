@@ -76,7 +76,7 @@ export default function JelajahBentuk2(): JSX.Element {
         try {
             // Ganti path ini dengan lokasi file audio instruksi Anda
             const audio = new Audio('/audio/Urutkan bentuk besar-kecil.m4a');
-            audio.volume = 0.7;
+            audio.volume = 1;
             audio.preload = 'auto';
 
             // Promise untuk menangani loading dan playing
@@ -126,7 +126,7 @@ export default function JelajahBentuk2(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        setComponentVolume(0.7);
+        setComponentVolume(0.2);
         initializeGame();
     }, [setComponentVolume, gameLevel]);
 

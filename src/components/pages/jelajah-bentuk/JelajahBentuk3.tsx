@@ -132,7 +132,7 @@ export default function JelajahBentuk3(): JSX.Element {
         try {
             // Ganti dengan path audio instruksi Anda
             const audio = new Audio('/audio/Urutkan bentuk kecil - besar.m4a');
-            audio.volume = 0.7;
+            audio.volume = 1;
             setInstructionAudio(audio);
 
             // Auto play instruction audio
@@ -177,7 +177,7 @@ export default function JelajahBentuk3(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        setComponentVolume(0.7);
+        setComponentVolume(0.1);
         initializeGame();
 
         // Initialize instruction audio on component mount

@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, DragEvent } from "react";
+import React, { useState, useEffect, useRef, DragEvent } from "react";
 import { Check, X } from "lucide-react";
 import Home from "@/assets/icons/Home.webp";
 import Image from "next/image";
@@ -87,7 +88,11 @@ export default function DuniaBentuk5(): JSX.Element {
     const [feedback, setFeedback] = useState<Feedback>({});
     const [completedCount, setCompletedCount] = useState<number>(0);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
-    const { navigateTo, setDuniaBentukFinished, updateLevelDuniaBentuk } = useGameState();
+    const { navigateTo, setDuniaBentukFinished, updateLevelDuniaBentuk, state, setPlayingInstructionDuniaBentuk } = useGameState();
+    const { isPlayingInstructionDuniaBentuk } = state
+
+    // Audio ref untuk kontrol audio
+    const audioRef = useRef<HTMLAudioElement>(null);
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>, item: GameItem): void => {
         setDraggedItem(item);
@@ -147,24 +152,80 @@ export default function DuniaBentuk5(): JSX.Element {
     };
 
     const handleBackToMenu = () => {
+        // Stop audio ketika kembali ke menu
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
         navigateTo("menu-game");
     };
 
     const handleGameCompletion = () => {
+        // Stop audio ketika game selesai
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
         updateLevelDuniaBentuk(1);
         setDuniaBentukFinished(true);
         navigateTo("menu-game");
     };
 
+    // Effect untuk mengontrol audio instruction berdasarkan state
+    useEffect(() => {
+        const playAudio = async () => {
+            try {
+                // Logika 1: Jika isPlayingInstructionDuniaBentuk false, ubah menjadi true dan putar audio
+                if (!isPlayingInstructionDuniaBentuk) {
+                    setPlayingInstructionDuniaBentuk(true);
+
+                    if (audioRef.current) {
+                        audioRef.current.volume = 0.9; // Set volume (0.0 - 1.0)
+                        await audioRef.current.play();
+                    }
+                }
+                // Logika 2: Jika isPlayingInstructionDuniaBentuk true, tidak melakukan apa-apa
+                // (audio tidak diputar dan state tidak diubah)
+            } catch (error) {
+                console.log("Audio could not be played automatically:", error);
+                // Audio mungkin diblokir oleh browser policy, biarkan user mengklik untuk memutar
+            }
+        };
+
+        playAudio();
+
+        // Cleanup: pause audio ketika component unmount
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
+        };
+    }, []); // Dependency array kosong karena kita hanya ingin ini berjalan sekali saat mount
+
     // Effect to handle completion
     useEffect(() => {
         if (completedCount === 4) {
             setShowSuccess(true);
+
+            // Stop audio ketika game selesai
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
         }
     }, [completedCount]);
 
     return (
         <div className="relative w-full h-screen bg-[#fef625] overflow-hidden flex flex-col">
+            {/* Audio Element */}
+            <audio
+                ref={audioRef}
+                preload="auto"
+            >
+                <source src="/audio/Dunia bentuk Fige.m4a" type="audio/mp4" />
+            </audio>
+
             {/* Home Button - Tombol Kembali */}
             <div className="absolute top-8 right-8 z-10">
                 <button

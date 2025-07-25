@@ -166,7 +166,7 @@ export default function JelajahBentuk5(): JSX.Element {
     const playInstructionAudio = (): void => {
         try {
             const audio = new Audio('/audio/Urutkan bentuk kecil - besar.m4a'); // Sesuaikan dengan nama file audio Anda
-            audio.volume = 0.7;
+            audio.volume = 1;
             audio.play().catch((error) => {
                 console.log('Audio play failed:', error);
             });
@@ -183,7 +183,7 @@ export default function JelajahBentuk5(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        setComponentVolume(0.7);
+        setComponentVolume(0.2);
         initializeGame();
 
         // Play instruction audio when component mounts

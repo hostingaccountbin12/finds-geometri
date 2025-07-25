@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, DragEvent } from "react";
+import React, { useState, useEffect, useRef, DragEvent } from "react";
 import { Check, X } from "lucide-react";
 import Home from "@/assets/icons/Home.webp";
 import Image from "next/image";
@@ -87,7 +88,11 @@ export default function DuniaBentuk4(): JSX.Element {
     const [feedback, setFeedback] = useState<Feedback>({});
     const [completedCount, setCompletedCount] = useState<number>(0);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
-    const { navigateTo, updateLevelDuniaBentuk, state } = useGameState();
+    const { navigateTo, updateLevelDuniaBentuk, state, setPlayingInstructionDuniaBentuk } = useGameState();
+    const { isPlayingInstructionDuniaBentuk } = state
+
+    // Audio ref untuk kontrol audio
+    const audioRef = useRef<HTMLAudioElement>(null);
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>, item: GameItem): void => {
         setDraggedItem(item);
@@ -147,21 +152,63 @@ export default function DuniaBentuk4(): JSX.Element {
     };
 
     const handleBackToMenu = () => {
+        // Stop audio ketika kembali ke menu
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
         navigateTo("menu-game");
     };
+
+    // Effect untuk mengontrol audio instruction berdasarkan state
+    useEffect(() => {
+        const playAudio = async () => {
+            try {
+                // Logika 1: Jika isPlayingInstructionDuniaBentuk false, ubah menjadi true dan putar audio
+                if (!isPlayingInstructionDuniaBentuk) {
+                    setPlayingInstructionDuniaBentuk(true);
+
+                    if (audioRef.current) {
+                        audioRef.current.volume = 0.9; // Set volume (0.0 - 1.0)
+                        await audioRef.current.play();
+                    }
+                }
+                // Logika 2: Jika isPlayingInstructionDuniaBentuk true, tidak melakukan apa-apa
+                // (audio tidak diputar dan state tidak diubah)
+            } catch (error) {
+                console.log("Audio could not be played automatically:", error);
+                // Audio mungkin diblokir oleh browser policy, biarkan user mengklik untuk memutar
+            }
+        };
+
+        playAudio();
+
+        // Cleanup: pause audio ketika component unmount
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
+        };
+    }, []); // Dependency array kosong karena kita hanya ingin ini berjalan sekali saat mount
 
     // Effect to handle completion
     useEffect(() => {
         if (completedCount === 4) {
             setShowSuccess(true);
 
-            // Update level to 2 if current level is 1
+            // Update level to 5 if current level is 4
             if (state.levelDuniaBentuk === 4) {
                 updateLevelDuniaBentuk(5);
             }
 
-            // Auto navigate to dunia-bentuk-2 after 3 seconds
+            // Auto navigate to dunia-bentuk-5 after 3 seconds
             const timer = setTimeout(() => {
+                // Stop audio sebelum pindah ke level berikutnya
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current.currentTime = 0;
+                }
                 navigateTo("dunia-bentuk-5");
             }, 3000);
 
@@ -171,6 +218,14 @@ export default function DuniaBentuk4(): JSX.Element {
 
     return (
         <div className="relative w-full h-screen bg-[#fef625] overflow-hidden flex flex-col">
+            {/* Audio Element */}
+            <audio
+                ref={audioRef}
+                preload="auto"
+            >
+                <source src="/audio/Dunia bentuk Fige.m4a" type="audio/mp4" />
+            </audio>
+
             {/* Home Button - Tombol Kembali */}
             <div className="absolute top-8 right-8 z-10">
                 <button
