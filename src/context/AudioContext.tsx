@@ -6,6 +6,9 @@ interface AudioContextProps {
     audioPlaying: boolean;
     toggleAudio: () => void;
     setComponentVolume: (volume: number) => void;
+    pauseBackgroundMusic: () => void;
+    resumeBackgroundMusic: () => void;
+    isBackgroundMusicPaused: boolean;
 }
 
 const AudioContext = createContext<AudioContextProps | undefined>(undefined);
@@ -13,6 +16,7 @@ const AudioContext = createContext<AudioContextProps | undefined>(undefined);
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     const [audioPlaying, setAudioPlaying] = useState(false);
     const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+    const [isBackgroundMusicPaused, setIsBackgroundMusicPaused] = useState(false);
 
     useEffect(() => {
         const audio = new Audio('/audio/Music.mp3');
@@ -33,19 +37,39 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
             if (audioPlaying) {
                 audioElement.pause();
             } else {
-                audioElement.play().catch((e) => {
-                    console.log("Audio play failed:", e);
-                    alert("Click again to play background music!");
-                });
+                // Only play if not manually paused by component
+                if (!isBackgroundMusicPaused) {
+                    audioElement.play().catch((e) => {
+                        console.log("Audio play failed:", e);
+                        alert("Click again to play background music!");
+                    });
+                }
             }
             setAudioPlaying(!audioPlaying);
         }
     };
 
-    // New function to set volume based on component
+    // Function to temporarily pause background music (for components like karaoke)
+    const pauseBackgroundMusic = () => {
+        if (audioElement && audioPlaying) {
+            audioElement.pause();
+            setIsBackgroundMusicPaused(true);
+        }
+    };
+
+    // Function to resume background music
+    const resumeBackgroundMusic = () => {
+        if (audioElement && audioPlaying && isBackgroundMusicPaused) {
+            audioElement.play().catch((e) => {
+                console.log("Audio resume failed:", e);
+            });
+            setIsBackgroundMusicPaused(false);
+        }
+    };
+
+    // Function to set volume (keep this for other components that might need it)
     const setComponentVolume = (volume: number) => {
         if (audioElement) {
-            // Ensure volume is between 0 and 1
             const clampedVolume = Math.max(0, Math.min(1, volume));
             audioElement.volume = clampedVolume;
         }
@@ -55,7 +79,10 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         <AudioContext.Provider value={{
             audioPlaying,
             toggleAudio,
-            setComponentVolume
+            setComponentVolume,
+            pauseBackgroundMusic,
+            resumeBackgroundMusic,
+            isBackgroundMusicPaused
         }}>
             {children}
         </AudioContext.Provider>

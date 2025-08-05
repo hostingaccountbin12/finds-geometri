@@ -8,6 +8,7 @@ import Pohon from "@/assets/icons/Pohon.png";
 import FooterMenu from "@/assets/icons/FooterMenu.png";
 import Home from "@/assets/icons/Home.webp";
 import Restart from "@/assets/icons/Restart.webp";
+import { useAudio } from "@/context/AudioContext";
 
 const playpen = Playpen_Sans({ subsets: ["latin"], weight: "700" });
 
@@ -50,6 +51,7 @@ interface LyricsDisplayProps {
 
 export default function AyoMenyanyi(): JSX.Element {
     const { navigateTo } = useGameState();
+    const { pauseBackgroundMusic, resumeBackgroundMusic } = useAudio()
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Karaoke states
@@ -59,6 +61,16 @@ export default function AyoMenyanyi(): JSX.Element {
     const [hasStarted, setHasStarted] = useState<boolean>(false);
     const [visibleWindow, setVisibleWindow] = useState<number[]>([0, 1, 2]); // Track visible lyric indices
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        // Pause background music ketika masuk ke halaman karaoke
+        pauseBackgroundMusic();
+
+        // Resume background music ketika keluar dari halaman
+        return () => {
+            resumeBackgroundMusic();
+        };
+    }, [pauseBackgroundMusic, resumeBackgroundMusic]);
 
     useEffect(() => {
         // Hanya buat audio object tanpa auto play
@@ -225,6 +237,9 @@ export default function AyoMenyanyi(): JSX.Element {
         // Stop audio dan reset semuanya sebelum navigasi
         stopAudio();
         handleRestart();
+
+        // Resume background music sebelum navigasi
+        resumeBackgroundMusic();
         navigateTo("menu-game");
     };
 

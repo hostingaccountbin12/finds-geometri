@@ -17,6 +17,7 @@ import MiniGames from "@/assets/icons/MiniGames.gif";
 import MontirKecil from "@/assets/icons/MontirKecil.gif";
 import MariBerkreasi from "@/assets/icons/MariBerkreasi.gif";
 import DuniaBentuk from "@/assets/icons/DuniaBentuk.gif";
+import { useAudio } from "@/context/AudioContext";
 
 // Certificate/Trophy Icon Component
 const CertificateIcon = () => (
@@ -36,6 +37,11 @@ const CertificateIcon = () => (
 export default function MenuGame() {
   const { state, navigateTo, setPlayingInstructionDuniaBentuk } =
     useGameState();
+  const { setComponentVolume } = useAudio()
+
+  useEffect(() => {
+    setComponentVolume(0.2);
+  }, [setComponentVolume]);
 
   useEffect(() => {
     if (state.isPlayingInstructionDuniaBentuk) {
