@@ -35,8 +35,8 @@ const Triangle: React.FC<{
 }> = ({ size, color, isDragging = false, isSelected = false, style }) => (
   <div
     className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-6 scale-110' :
-        isSelected ? 'scale-110 ring-4 ring-yellow-400 ring-offset-2' :
-          'hover:scale-105'
+      isSelected ? 'scale-110 ring-4 ring-yellow-400 ring-offset-2' :
+        'hover:scale-105'
       }`}
     style={{
       width: size,
@@ -211,6 +211,7 @@ export default function JelajahBentuk1(): JSX.Element {
   // Mobile click handlers
   const handleShapeClick = (shape: Shape, isFromSorted: boolean = false): void => {
     if (!isMobile) return; // Only work on mobile
+    if (showSuccess || completedCount === 4) return; // Disable clicks when game is completed
 
     if (isFromSorted) {
       // If clicking from sorted area, move it back to available
@@ -238,6 +239,7 @@ export default function JelajahBentuk1(): JSX.Element {
 
   const handleSortedAreaClick = (): void => {
     if (!isMobile || !selectedShape) return;
+    if (showSuccess || completedCount === 4) return; // Disable clicks when game is completed
 
     // Same logic as drop handler
     const nextPosition = sortedShapes.length + 1;
@@ -422,8 +424,8 @@ export default function JelajahBentuk1(): JSX.Element {
                   onDragStart={!isMobile ? (e) => handleDragStart(e, shape) : undefined}
                   onClick={isMobile ? () => handleShapeClick(shape) : undefined}
                   className={`${isMobile ?
-                      'cursor-pointer' :
-                      'cursor-grab active:cursor-grabbing hover:cursor-grab'
+                    'cursor-pointer' :
+                    'cursor-grab active:cursor-grabbing hover:cursor-grab'
                     } relative transition-all duration-200`}
                 >
                   <Triangle
@@ -460,8 +462,8 @@ export default function JelajahBentuk1(): JSX.Element {
             </h2>
             <div
               className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 transition-all duration-200 ${completedCount === 4 ? 'border-green-500 bg-green-100' :
-                  selectedShape && isMobile ? 'border-blue-500 bg-blue-100' :
-                    'border-blue-400 bg-blue-50'
+                selectedShape && isMobile ? 'border-blue-500 bg-blue-100' :
+                  'border-blue-400 bg-blue-50'
                 } ${isMobile && selectedShape ? 'cursor-pointer' : ''
                 }`}
               onDragOver={!isMobile ? handleDragOver : undefined}
@@ -478,8 +480,8 @@ export default function JelajahBentuk1(): JSX.Element {
                     handleShapeClick(shape, true);
                   } : undefined}
                   className={`${isMobile ?
-                      'cursor-pointer' :
-                      'cursor-grab active:cursor-grabbing hover:cursor-grab'
+                    'cursor-pointer' :
+                    'cursor-grab active:cursor-grabbing hover:cursor-grab'
                     } relative transition-all duration-200`}
                 >
                   <Triangle
