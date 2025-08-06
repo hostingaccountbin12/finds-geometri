@@ -269,7 +269,7 @@ export default function AyoMenyanyi(): JSX.Element {
                 {!hasStarted ? (
                     <div className="flex flex-col items-center justify-center h-full">
                         <h2 className={`${isMobile ? 'text-base' : 'text-3xl'} font-bold ${isMobile ? 'mb-2' : 'mb-6'} text-center ${playpen.className}`}>
-                            Lagu Pagi Cerah
+                            Lagu Bentuk Bentuk Geometri
                         </h2>
                         {!isMobile && (
                             <p className={`text-center mb-8 text-lg ${playpen.className}`}>

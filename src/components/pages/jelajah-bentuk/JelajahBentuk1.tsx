@@ -30,10 +30,14 @@ const Triangle: React.FC<{
   size: number;
   color: string;
   isDragging?: boolean;
+  isSelected?: boolean;
   style?: React.CSSProperties;
-}> = ({ size, color, isDragging = false, style }) => (
+}> = ({ size, color, isDragging = false, isSelected = false, style }) => (
   <div
-    className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-6 scale-110' : 'hover:scale-105'}`}
+    className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-6 scale-110' :
+        isSelected ? 'scale-110 ring-4 ring-yellow-400 ring-offset-2' :
+          'hover:scale-105'
+      }`}
     style={{
       width: size,
       height: size,
@@ -49,8 +53,8 @@ const Triangle: React.FC<{
       <polygon
         points="50,10 90,80 10,80"
         fill={color}
-        stroke="#2D3748"
-        strokeWidth="2"
+        stroke={isSelected ? "#F59E0B" : "#2D3748"}
+        strokeWidth={isSelected ? "4" : "2"}
         className="transition-all duration-300"
       />
     </svg>
@@ -61,11 +65,13 @@ export default function JelajahBentuk1(): JSX.Element {
   const { setComponentVolume } = useAudio();
   const { navigateTo, updateLevelJelajahBentuk, state } = useGameState();
   const [isMobileLandscape, setIsMobileLandscape] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Game state
   const [availableShapes, setAvailableShapes] = useState<Shape[]>([]);
   const [sortedShapes, setSortedShapes] = useState<Shape[]>([]);
   const [draggedShape, setDraggedShape] = useState<Shape | null>(null);
+  const [selectedShape, setSelectedShape] = useState<Shape | null>(null); // New state for mobile selection
   const [feedback, setFeedback] = useState<Feedback>({});
   const [completedCount, setCompletedCount] = useState<number>(0);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
@@ -85,11 +91,12 @@ export default function JelajahBentuk1(): JSX.Element {
     ]
   };
 
-  // Function to check if device is in mobile landscape mode
-  const checkMobileLandscape = (): void => {
-    const isMobile = window.innerWidth <= 1024;
+  // Function to check if device is mobile
+  const checkDevice = (): void => {
+    const isMobileDevice = window.innerWidth <= 1024;
     const isLandscape = window.innerWidth > window.innerHeight;
-    setIsMobileLandscape(isMobile && isLandscape);
+    setIsMobile(isMobileDevice);
+    setIsMobileLandscape(isMobileDevice && isLandscape);
   };
 
   // Shuffle array function
@@ -110,24 +117,22 @@ export default function JelajahBentuk1(): JSX.Element {
     setFeedback({});
     setCompletedCount(0);
     setShowSuccess(false);
+    setSelectedShape(null);
   };
 
   // Initialize and play instruction audio
   const initializeInstructionAudio = (): void => {
     try {
-      // Ganti dengan path audio instruksi Anda
       const audio = new Audio('/audio/Urutkan bentuk kecil - besar.m4a');
       audio.volume = 1;
       setInstructionAudio(audio);
 
-      // Auto play instruction audio
       const playInstruction = async () => {
         try {
           await audio.play();
           setHasPlayedInstruction(true);
         } catch (error) {
           console.log('Auto-play prevented by browser:', error);
-          // Fallback: play on first user interaction
           const handleFirstInteraction = async () => {
             if (!hasPlayedInstruction) {
               try {
@@ -146,30 +151,26 @@ export default function JelajahBentuk1(): JSX.Element {
         }
       };
 
-      // Small delay to ensure component is fully loaded
       setTimeout(playInstruction, 500);
-
     } catch (error) {
       console.error('Error initializing instruction audio:', error);
     }
   };
 
   useEffect(() => {
-    checkMobileLandscape();
-    window.addEventListener('resize', checkMobileLandscape);
-    return () => window.removeEventListener('resize', checkMobileLandscape);
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
   }, []);
 
   useEffect(() => {
     setComponentVolume(0.2);
     initializeGame();
 
-    // Initialize instruction audio on component mount
     if (!hasPlayedInstruction) {
       initializeInstructionAudio();
     }
 
-    // Cleanup function
     return () => {
       if (instructionAudio) {
         instructionAudio.pause();
@@ -178,23 +179,19 @@ export default function JelajahBentuk1(): JSX.Element {
     };
   }, [setComponentVolume, gameLevel]);
 
-  // Check if game is completed
   useEffect(() => {
     if (completedCount === 4) {
       setShowSuccess(true);
 
-      // Stop instruction audio if still playing
       if (instructionAudio && !instructionAudio.paused) {
         instructionAudio.pause();
         instructionAudio.currentTime = 0;
       }
 
-      // Update level jika diperlukan
       if (state.levelJelajahBentuk === 1) {
         updateLevelJelajahBentuk(2);
       }
 
-      // Auto navigate ke jelajah-bentuk-2 setelah 3 detik
       const timer = setTimeout(() => {
         navigateTo("jelajah-bentuk-2");
       }, 3000);
@@ -204,7 +201,6 @@ export default function JelajahBentuk1(): JSX.Element {
   }, [completedCount, navigateTo, updateLevelJelajahBentuk, state.levelJelajahBentuk, instructionAudio]);
 
   const handleHome = (): void => {
-    // Stop instruction audio when leaving
     if (instructionAudio && !instructionAudio.paused) {
       instructionAudio.pause();
       instructionAudio.currentTime = 0;
@@ -212,39 +208,89 @@ export default function JelajahBentuk1(): JSX.Element {
     navigateTo("menu-game");
   };
 
+  // Mobile click handlers
+  const handleShapeClick = (shape: Shape, isFromSorted: boolean = false): void => {
+    if (!isMobile) return; // Only work on mobile
 
-  // Drag handlers
+    if (isFromSorted) {
+      // If clicking from sorted area, move it back to available
+      const draggedIndex = sortedShapes.findIndex(s => s.id === shape.id);
+      const shapesToReturn = sortedShapes.slice(draggedIndex);
+      const remainingShapes = sortedShapes.slice(0, draggedIndex);
+
+      setSortedShapes(remainingShapes);
+      setAvailableShapes(prev => [...prev, ...shapesToReturn]);
+      setCompletedCount(remainingShapes.length);
+
+      setFeedback(prev => {
+        const newFeedback = { ...prev };
+        shapesToReturn.forEach(s => {
+          delete newFeedback[s.id];
+        });
+        return newFeedback;
+      });
+      setSelectedShape(null);
+    } else {
+      // Select shape from available area
+      setSelectedShape(selectedShape?.id === shape.id ? null : shape);
+    }
+  };
+
+  const handleSortedAreaClick = (): void => {
+    if (!isMobile || !selectedShape) return;
+
+    // Same logic as drop handler
+    const nextPosition = sortedShapes.length + 1;
+    const isCorrect = selectedShape.correctOrder === nextPosition;
+
+    if (isCorrect) {
+      setSortedShapes(prev => [...prev, selectedShape]);
+      setAvailableShapes(prev => prev.filter(s => s.id !== selectedShape.id));
+      setFeedback(prev => ({ ...prev, [selectedShape.id]: true }));
+      setCompletedCount(prev => prev + 1);
+      setSelectedShape(null);
+    } else {
+      setFeedback(prev => ({ ...prev, [selectedShape.id]: false }));
+
+      setTimeout(() => {
+        setFeedback(prev => {
+          const newFeedback = { ...prev };
+          delete newFeedback[selectedShape.id];
+          return newFeedback;
+        });
+      }, 1000);
+    }
+  };
+
+  // Drag handlers for desktop
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, shape: Shape): void => {
+    if (isMobile) return; // Disable drag on mobile
     setDraggedShape(shape);
     e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
+    if (isMobile) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDropToSorted = (e: React.DragEvent<HTMLDivElement>): void => {
+    if (isMobile) return;
     e.preventDefault();
     if (!draggedShape) return;
 
-    // Tentukan posisi berikutnya dalam array sorted
     const nextPosition = sortedShapes.length + 1;
-
-    // Cek apakah urutan benar
     const isCorrect = draggedShape.correctOrder === nextPosition;
 
     if (isCorrect) {
-      // Pindahkan ke sorted area
       setSortedShapes(prev => [...prev, draggedShape]);
       setAvailableShapes(prev => prev.filter(s => s.id !== draggedShape.id));
       setFeedback(prev => ({ ...prev, [draggedShape.id]: true }));
       setCompletedCount(prev => prev + 1);
     } else {
-      // Tampilkan feedback salah
       setFeedback(prev => ({ ...prev, [draggedShape.id]: false }));
 
-      // Hapus feedback salah setelah 1 detik
       setTimeout(() => {
         setFeedback(prev => {
           const newFeedback = { ...prev };
@@ -258,12 +304,11 @@ export default function JelajahBentuk1(): JSX.Element {
   };
 
   const handleDropToAvailable = (e: React.DragEvent<HTMLDivElement>): void => {
+    if (isMobile) return;
     e.preventDefault();
     if (!draggedShape) return;
 
-    // Jika shape dari sorted area, kembalikan ke available
     if (sortedShapes.find(s => s.id === draggedShape.id)) {
-      // Hapus dari sorted area dan semua yang setelahnya
       const draggedIndex = sortedShapes.findIndex(s => s.id === draggedShape.id);
       const shapesToReturn = sortedShapes.slice(draggedIndex);
       const remainingShapes = sortedShapes.slice(0, draggedIndex);
@@ -272,7 +317,6 @@ export default function JelajahBentuk1(): JSX.Element {
       setAvailableShapes(prev => [...prev, ...shapesToReturn]);
       setCompletedCount(remainingShapes.length);
 
-      // Hapus feedback untuk shapes yang dikembalikan
       setFeedback(prev => {
         const newFeedback = { ...prev };
         shapesToReturn.forEach(shape => {
@@ -337,6 +381,17 @@ export default function JelajahBentuk1(): JSX.Element {
         </button>
       </div>
 
+      {/* Mobile Instructions */}
+      {isMobile && (
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-40 bg-blue-500 text-white px-4 py-2 rounded-lg text-center max-w-xs">
+          <p className="text-sm font-semibold">
+            {selectedShape ?
+              "Klik area kanan untuk menempatkan bentuk yang dipilih" :
+              "Klik bentuk untuk memilih, lalu klik area kanan"
+            }
+          </p>
+        </div>
+      )}
 
       {/* Game Content */}
       <div className="relative z-20 w-full max-w-6xl mx-auto px-4">
@@ -355,21 +410,27 @@ export default function JelajahBentuk1(): JSX.Element {
           {/* Available Shapes */}
           <div className="bg-white/80 rounded-xl p-6 backdrop-blur-sm min-h-[200px] flex-1">
             <div
-              className="flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed border-gray-400 rounded-lg p-4"
-              onDragOver={handleDragOver}
-              onDrop={handleDropToAvailable}
+              className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed border-gray-400 rounded-lg p-4 ${isMobile ? 'cursor-pointer' : ''
+                }`}
+              onDragOver={!isMobile ? handleDragOver : undefined}
+              onDrop={!isMobile ? handleDropToAvailable : undefined}
             >
               {availableShapes.map((shape) => (
                 <div
                   key={shape.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, shape)}
-                  className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
+                  draggable={!isMobile}
+                  onDragStart={!isMobile ? (e) => handleDragStart(e, shape) : undefined}
+                  onClick={isMobile ? () => handleShapeClick(shape) : undefined}
+                  className={`${isMobile ?
+                      'cursor-pointer' :
+                      'cursor-grab active:cursor-grabbing hover:cursor-grab'
+                    } relative transition-all duration-200`}
                 >
                   <Triangle
                     size={shape.size}
                     color={shape.color}
                     isDragging={draggedShape?.id === shape.id}
+                    isSelected={selectedShape?.id === shape.id}
                   />
 
                   {/* Feedback Icons */}
@@ -398,17 +459,28 @@ export default function JelajahBentuk1(): JSX.Element {
               Urutkan dari yang kecil hingga terbesar
             </h2>
             <div
-              className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 ${completedCount === 4 ? 'border-green-500 bg-green-100' : 'border-blue-400 bg-blue-50'
+              className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 transition-all duration-200 ${completedCount === 4 ? 'border-green-500 bg-green-100' :
+                  selectedShape && isMobile ? 'border-blue-500 bg-blue-100' :
+                    'border-blue-400 bg-blue-50'
+                } ${isMobile && selectedShape ? 'cursor-pointer' : ''
                 }`}
-              onDragOver={handleDragOver}
-              onDrop={handleDropToSorted}
+              onDragOver={!isMobile ? handleDragOver : undefined}
+              onDrop={!isMobile ? handleDropToSorted : undefined}
+              onClick={isMobile ? handleSortedAreaClick : undefined}
             >
               {sortedShapes.map((shape) => (
                 <div
                   key={`sorted-${shape.id}`}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, shape)}
-                  className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
+                  draggable={!isMobile}
+                  onDragStart={!isMobile ? (e) => handleDragStart(e, shape) : undefined}
+                  onClick={isMobile ? (e) => {
+                    e.stopPropagation();
+                    handleShapeClick(shape, true);
+                  } : undefined}
+                  className={`${isMobile ?
+                      'cursor-pointer' :
+                      'cursor-grab active:cursor-grabbing hover:cursor-grab'
+                    } relative transition-all duration-200`}
                 >
                   <Triangle
                     size={shape.size}
@@ -420,7 +492,9 @@ export default function JelajahBentuk1(): JSX.Element {
 
               {sortedShapes.length === 0 && (
                 <div className="text-gray-500 text-center">
-                  <p className="text-lg font-semibold">Seret segitiga di sini</p>
+                  <p className="text-lg font-semibold">
+                    {isMobile ? "Klik di sini setelah memilih bentuk" : "Seret segitiga di sini"}
+                  </p>
                   <p className="text-sm">Mulai dari yang terkecil</p>
                 </div>
               )}

@@ -235,13 +235,6 @@ export default function MenuGame() {
                 )}
               </button>
 
-              {/* Level Indicator */}
-              {item.level && (
-                <div className="absolute -top-2 -left-2 bg-blue-500 text-white font-bold text-sm px-2 py-1 rounded-full border-2 border-blue-700 shadow-lg z-20">
-                  Lv {item.level}
-                </div>
-              )}
-
               {/* Completion Certificate/Trophy */}
               {item.isCompleted && <CertificateIcon />}
             </div>
