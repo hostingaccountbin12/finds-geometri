@@ -30,15 +30,19 @@ const Square: React.FC<{
     size: number;
     color: string;
     isDragging?: boolean;
+    isSelected?: boolean;
     style?: React.CSSProperties;
-}> = ({ size, color, isDragging = false, style }) => (
+}> = ({ size, color, isDragging = false, isSelected = false, style }) => (
     <div
-        className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-3 scale-110' : 'hover:scale-105'}`}
+        className={`inline-block transition-all duration-300 ${isDragging ? 'rotate-3 scale-110' :
+                isSelected ? 'scale-110 ring-4 ring-yellow-400 ring-offset-2' :
+                    'hover:scale-105'
+            }`}
         style={{
             width: size,
             height: size,
             backgroundColor: color,
-            border: '2px solid #2D3748',
+            border: isSelected ? '4px solid #F59E0B' : '2px solid #2D3748',
             borderRadius: '8px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             ...style
@@ -50,12 +54,14 @@ export default function JelajahBentuk2(): JSX.Element {
     const { setComponentVolume } = useAudio();
     const { navigateTo, updateLevelJelajahBentuk, state } = useGameState();
     const [isMobileLandscape, setIsMobileLandscape] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
     const [hasPlayedInstructions, setHasPlayedInstructions] = useState<boolean>(false);
 
     // Game state
     const [availableShapes, setAvailableShapes] = useState<Shape[]>([]);
     const [sortedShapes, setSortedShapes] = useState<Shape[]>([]);
     const [draggedShape, setDraggedShape] = useState<Shape | null>(null);
+    const [selectedShape, setSelectedShape] = useState<Shape | null>(null); // New state for mobile selection
     const [feedback, setFeedback] = useState<Feedback>({});
     const [completedCount, setCompletedCount] = useState<number>(0);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
@@ -92,11 +98,12 @@ export default function JelajahBentuk2(): JSX.Element {
         }
     };
 
-    // Function to check if device is in mobile landscape mode
-    const checkMobileLandscape = (): void => {
-        const isMobile = window.innerWidth <= 1024;
+    // Function to check if device is mobile
+    const checkDevice = (): void => {
+        const isMobileDevice = window.innerWidth <= 1024;
         const isLandscape = window.innerWidth > window.innerHeight;
-        setIsMobileLandscape(isMobile && isLandscape);
+        setIsMobile(isMobileDevice);
+        setIsMobileLandscape(isMobileDevice && isLandscape);
     };
 
     // Shuffle array function
@@ -117,12 +124,13 @@ export default function JelajahBentuk2(): JSX.Element {
         setFeedback({});
         setCompletedCount(0);
         setShowSuccess(false);
+        setSelectedShape(null);
     };
 
     useEffect(() => {
-        checkMobileLandscape();
-        window.addEventListener('resize', checkMobileLandscape);
-        return () => window.removeEventListener('resize', checkMobileLandscape);
+        checkDevice();
+        window.addEventListener('resize', checkDevice);
+        return () => window.removeEventListener('resize', checkDevice);
     }, []);
 
     useEffect(() => {
@@ -168,18 +176,77 @@ export default function JelajahBentuk2(): JSX.Element {
         navigateTo("menu-game");
     };
 
-    // Drag handlers
+    // Mobile click handlers
+    const handleShapeClick = (shape: Shape, isFromSorted: boolean = false): void => {
+        if (!isMobile) return; // Only work on mobile
+        if (showSuccess || completedCount === 4) return; // Disable clicks when game is completed
+
+        if (isFromSorted) {
+            // If clicking from sorted area, move it back to available
+            const draggedIndex = sortedShapes.findIndex(s => s.id === shape.id);
+            const shapesToReturn = sortedShapes.slice(draggedIndex);
+            const remainingShapes = sortedShapes.slice(0, draggedIndex);
+
+            setSortedShapes(remainingShapes);
+            setAvailableShapes(prev => [...prev, ...shapesToReturn]);
+            setCompletedCount(remainingShapes.length);
+
+            setFeedback(prev => {
+                const newFeedback = { ...prev };
+                shapesToReturn.forEach(s => {
+                    delete newFeedback[s.id];
+                });
+                return newFeedback;
+            });
+            setSelectedShape(null);
+        } else {
+            // Select shape from available area
+            setSelectedShape(selectedShape?.id === shape.id ? null : shape);
+        }
+    };
+
+    const handleSortedAreaClick = (): void => {
+        if (!isMobile || !selectedShape) return;
+        if (showSuccess || completedCount === 4) return; // Disable clicks when game is completed
+
+        // Same logic as drop handler
+        const nextPosition = sortedShapes.length + 1;
+        const isCorrect = selectedShape.correctOrder === nextPosition;
+
+        if (isCorrect) {
+            setSortedShapes(prev => [...prev, selectedShape]);
+            setAvailableShapes(prev => prev.filter(s => s.id !== selectedShape.id));
+            setFeedback(prev => ({ ...prev, [selectedShape.id]: true }));
+            setCompletedCount(prev => prev + 1);
+            setSelectedShape(null);
+        } else {
+            setFeedback(prev => ({ ...prev, [selectedShape.id]: false }));
+
+            setTimeout(() => {
+                setFeedback(prev => {
+                    const newFeedback = { ...prev };
+                    delete newFeedback[selectedShape.id];
+                    return newFeedback;
+                });
+            }, 1000);
+        }
+    };
+
+    // Drag handlers for desktop
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, shape: Shape): void => {
+        if (isMobile) return; // Disable drag on mobile
         setDraggedShape(shape);
         e.dataTransfer.effectAllowed = 'move';
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
+        if (isMobile) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
     };
 
     const handleDropToSorted = (e: React.DragEvent<HTMLDivElement>): void => {
+        if (isMobile) return;
         e.preventDefault();
         if (!draggedShape) return;
 
@@ -213,6 +280,7 @@ export default function JelajahBentuk2(): JSX.Element {
     };
 
     const handleDropToAvailable = (e: React.DragEvent<HTMLDivElement>): void => {
+        if (isMobile) return;
         e.preventDefault();
         if (!draggedShape) return;
 
@@ -292,6 +360,18 @@ export default function JelajahBentuk2(): JSX.Element {
                 </button>
             </div>
 
+            {/* Mobile Instructions */}
+            {isMobile && (
+                <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-40 bg-blue-500 text-white px-4 py-2 rounded-lg text-center max-w-xs">
+                    <p className="text-sm font-semibold">
+                        {selectedShape ?
+                            "Klik area kanan untuk menempatkan bentuk yang dipilih" :
+                            "Klik bentuk untuk memilih, lalu klik area kanan"
+                        }
+                    </p>
+                </div>
+            )}
+
             {/* Game Content */}
             <div className="relative z-20 w-full max-w-6xl mx-auto px-4">
                 {/* Title */}
@@ -309,21 +389,27 @@ export default function JelajahBentuk2(): JSX.Element {
                     {/* Available Shapes */}
                     <div className="bg-white/80 rounded-xl p-6 backdrop-blur-sm min-h-[200px] flex-1">
                         <div
-                            className="flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed border-gray-400 rounded-lg p-4"
-                            onDragOver={handleDragOver}
-                            onDrop={handleDropToAvailable}
+                            className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed border-gray-400 rounded-lg p-4 ${isMobile ? 'cursor-pointer' : ''
+                                }`}
+                            onDragOver={!isMobile ? handleDragOver : undefined}
+                            onDrop={!isMobile ? handleDropToAvailable : undefined}
                         >
                             {availableShapes.map((shape) => (
                                 <div
                                     key={shape.id}
-                                    draggable
-                                    onDragStart={(e) => handleDragStart(e, shape)}
-                                    className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
+                                    draggable={!isMobile}
+                                    onDragStart={!isMobile ? (e) => handleDragStart(e, shape) : undefined}
+                                    onClick={isMobile ? () => handleShapeClick(shape) : undefined}
+                                    className={`${isMobile ?
+                                        'cursor-pointer' :
+                                        'cursor-grab active:cursor-grabbing hover:cursor-grab'
+                                        } relative transition-all duration-200`}
                                 >
                                     <Square
                                         size={shape.size}
                                         color={shape.color}
                                         isDragging={draggedShape?.id === shape.id}
+                                        isSelected={selectedShape?.id === shape.id}
                                     />
 
                                     {/* Feedback Icons */}
@@ -352,17 +438,28 @@ export default function JelajahBentuk2(): JSX.Element {
                             Urutkan dari yang terbesar hingga terkecil
                         </h2>
                         <div
-                            className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 ${completedCount === 4 ? 'border-green-500 bg-green-100' : 'border-blue-400 bg-blue-50'
+                            className={`flex flex-wrap gap-4 justify-center items-center min-h-[120px] border-2 border-dashed rounded-lg p-4 transition-all duration-200 ${completedCount === 4 ? 'border-green-500 bg-green-100' :
+                                selectedShape && isMobile ? 'border-blue-500 bg-blue-100' :
+                                    'border-blue-400 bg-blue-50'
+                                } ${isMobile && selectedShape ? 'cursor-pointer' : ''
                                 }`}
-                            onDragOver={handleDragOver}
-                            onDrop={handleDropToSorted}
+                            onDragOver={!isMobile ? handleDragOver : undefined}
+                            onDrop={!isMobile ? handleDropToSorted : undefined}
+                            onClick={isMobile ? handleSortedAreaClick : undefined}
                         >
                             {sortedShapes.map((shape) => (
                                 <div
                                     key={`sorted-${shape.id}`}
-                                    draggable
-                                    onDragStart={(e) => handleDragStart(e, shape)}
-                                    className="cursor-grab active:cursor-grabbing hover:cursor-grab relative"
+                                    draggable={!isMobile}
+                                    onDragStart={!isMobile ? (e) => handleDragStart(e, shape) : undefined}
+                                    onClick={isMobile ? (e) => {
+                                        e.stopPropagation();
+                                        handleShapeClick(shape, true);
+                                    } : undefined}
+                                    className={`${isMobile ?
+                                        'cursor-pointer' :
+                                        'cursor-grab active:cursor-grabbing hover:cursor-grab'
+                                        } relative transition-all duration-200`}
                                 >
                                     <Square
                                         size={shape.size}
@@ -374,7 +471,9 @@ export default function JelajahBentuk2(): JSX.Element {
 
                             {sortedShapes.length === 0 && (
                                 <div className="text-gray-500 text-center">
-                                    <p className="text-lg font-semibold">Seret persegi di sini</p>
+                                    <p className="text-lg font-semibold">
+                                        {isMobile ? "Klik di sini setelah memilih bentuk" : "Seret persegi di sini"}
+                                    </p>
                                     <p className="text-sm">Mulai dari yang terbesar</p>
                                 </div>
                             )}
