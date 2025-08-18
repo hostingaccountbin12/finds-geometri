@@ -347,11 +347,11 @@ export default function DuniaBentuk1(): JSX.Element {
 
       {/* Mobile Instructions */}
       {isMobile && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-40 bg-blue-500 text-white px-4 py-2 rounded-lg text-center max-w-xs">
+        <div className="absolute top-64 left-1/2 transform -translate-x-1/2 z-40 bg-blue-500 text-white px-4 py-2 rounded-lg text-center max-w-xs">
           <p className="text-sm font-semibold">
             {selectedItem ?
               "Klik slot bentuk yang sesuai untuk menempatkan gambar" :
-              "Klik gambar untuk memilih, lalu klik slot bentuk yang sesuai"
+              "Klik gambar untuk memilih, lalu klik di tempat bentuk yang sesuai"
             }
           </p>
         </div>

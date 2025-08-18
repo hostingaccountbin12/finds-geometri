@@ -87,23 +87,38 @@ export default function DuniaBentuk2(): JSX.Element {
     const [feedback, setFeedback] = useState<Feedback>({});
     const [completedCount, setCompletedCount] = useState<number>(0);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
+
+    // Mobile state
+    const [selectedItem, setSelectedItem] = useState<GameItem | null>(null);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
+
     const { navigateTo, updateLevelDuniaBentuk, state, setPlayingInstructionDuniaBentuk } = useGameState();
     const { isPlayingInstructionDuniaBentuk } = state
 
     // Audio ref untuk kontrol audio
     const audioRef = useRef<HTMLAudioElement>(null);
 
+    // Function to check if device is mobile
+    const checkDevice = (): void => {
+        const isMobileDevice = window.innerWidth <= 1024;
+        setIsMobile(isMobileDevice);
+    };
+
+    // Desktop drag handlers
     const handleDragStart = (e: DragEvent<HTMLDivElement>, item: GameItem): void => {
+        if (isMobile) return; // Disable drag on mobile
         setDraggedItem(item);
         e.dataTransfer.effectAllowed = "move";
     };
 
     const handleDragOver = (e: DragEvent<HTMLDivElement>): void => {
+        if (isMobile) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
     };
 
     const handleDrop = (e: DragEvent<HTMLDivElement>, slot: ShapeSlot): void => {
+        if (isMobile) return;
         e.preventDefault();
 
         if (!draggedItem) return;
@@ -150,6 +165,93 @@ export default function DuniaBentuk2(): JSX.Element {
         }, 1000);
     };
 
+    // Mobile click handlers
+    const handleItemClick = (item: GameItem): void => {
+        if (!isMobile) return; // Only work on mobile
+        if (showSuccess || completedCount === 4) return; // Disable clicks when game is completed
+
+        // Check if item is already correctly placed
+        const isCorrectlyPlaced = Object.entries(droppedItems).some(([slotId, droppedItem]) =>
+            droppedItem?.id === item.id && feedback[Number(slotId)] === true
+        );
+
+        if (isCorrectlyPlaced) return; // Don't allow selecting correctly placed items
+
+        // Toggle selection
+        setSelectedItem(selectedItem?.id === item.id ? null : item);
+    };
+
+    const handleSlotClick = (slot: ShapeSlot): void => {
+        if (!isMobile || !selectedItem) return;
+        if (showSuccess || completedCount === 4) return; // Disable clicks when game is completed
+
+        // Check if slot already has a correctly placed item
+        if (droppedItems[slot.id] && feedback[slot.id] === true) return;
+
+        const isCorrect = selectedItem.shape === slot.shape;
+
+        // Update dropped items
+        const newDroppedItems: DroppedItems = { ...droppedItems };
+
+        // Remove item from previous slot if it exists
+        Object.keys(newDroppedItems).forEach(key => {
+            const numKey = Number(key);
+            if (newDroppedItems[numKey]?.id === selectedItem.id) {
+                delete newDroppedItems[numKey];
+            }
+        });
+
+        newDroppedItems[slot.id] = selectedItem;
+        setDroppedItems(newDroppedItems);
+
+        // Update feedback
+        const newFeedback: Feedback = { ...feedback };
+        newFeedback[slot.id] = isCorrect;
+        setFeedback(newFeedback);
+
+        // Update completed count
+        const correctCount = Object.values(newFeedback).filter(Boolean).length;
+        setCompletedCount(correctCount);
+
+        setSelectedItem(null); // Clear selection after placing
+
+        // Show feedback for a moment
+        setTimeout(() => {
+            if (!isCorrect) {
+                // Remove incorrect item after showing X
+                const updatedDropped: DroppedItems = { ...newDroppedItems };
+                delete updatedDropped[slot.id];
+                setDroppedItems(updatedDropped);
+
+                const updatedFeedback: Feedback = { ...newFeedback };
+                delete updatedFeedback[slot.id];
+                setFeedback(updatedFeedback);
+            }
+        }, 1000);
+    };
+
+    // Handle clicking on dropped item in mobile (to remove it)
+    const handleDroppedItemClick = (item: GameItem, slotId: number): void => {
+        if (!isMobile) return;
+        if (showSuccess || completedCount === 4) return;
+        if (feedback[slotId] === true) return; // Don't allow removing correctly placed items
+
+        // Remove item from slot
+        const newDroppedItems: DroppedItems = { ...droppedItems };
+        delete newDroppedItems[slotId];
+        setDroppedItems(newDroppedItems);
+
+        const newFeedback: Feedback = { ...feedback };
+        delete newFeedback[slotId];
+        setFeedback(newFeedback);
+
+        // Update completed count
+        const correctCount = Object.values(newFeedback).filter(Boolean).length;
+        setCompletedCount(correctCount);
+
+        setSelectedItem(null);
+    };
+
     const handleBackToMenu = () => {
         // Stop audio ketika kembali ke menu
         if (audioRef.current) {
@@ -159,6 +261,13 @@ export default function DuniaBentuk2(): JSX.Element {
         navigateTo("menu-game");
     };
 
+    // Check device on mount and resize
+    useEffect(() => {
+        checkDevice();
+        window.addEventListener('resize', checkDevice);
+        return () => window.removeEventListener('resize', checkDevice);
+    }, []);
+
     // Effect untuk mengontrol audio instruction berdasarkan state
     useEffect(() => {
         const playAudio = async () => {
@@ -166,7 +275,7 @@ export default function DuniaBentuk2(): JSX.Element {
                 // Logika 1: Jika isPlayingInstructionDuniaBentuk false, ubah menjadi true dan putar audio
                 if (!isPlayingInstructionDuniaBentuk) {
                     setPlayingInstructionDuniaBentuk(true);
-                    
+
                     if (audioRef.current) {
                         audioRef.current.volume = 0.9; // Set volume (0.0 - 1.0)
                         await audioRef.current.play();
@@ -236,6 +345,18 @@ export default function DuniaBentuk2(): JSX.Element {
                 </button>
             </div>
 
+            {/* Mobile Instructions */}
+            {isMobile && (
+                <div className="absolute top-64 left-1/2 transform -translate-x-1/2 z-40 bg-blue-500 text-white px-4 py-2 rounded-lg text-center max-w-xs">
+                    <p className="text-sm font-semibold">
+                        {selectedItem ?
+                            "Klik slot bentuk yang sesuai untuk menempatkan gambar" :
+                            "Klik gambar untuk memilih, lalu klik di tempat bentuk yang sesuai"
+                        }
+                    </p>
+                </div>
+            )}
+
             {/* Title */}
             <div className="pt-20 pb-8 text-center">
                 <h1 className="text-6xl font-bold text-black mb-4">Dunia Bentuk!</h1>
@@ -263,9 +384,16 @@ export default function DuniaBentuk2(): JSX.Element {
                                     >
                                         {!isCorrectlyPlaced && (
                                             <div
-                                                draggable={true}
-                                                onDragStart={(e) => handleDragStart(e, item)}
-                                                className="cursor-grab active:cursor-grabbing hover:scale-105 transition-all duration-200"
+                                                draggable={!isMobile}
+                                                onDragStart={!isMobile ? (e) => handleDragStart(e, item) : undefined}
+                                                onClick={isMobile ? () => handleItemClick(item) : undefined}
+                                                className={`${isMobile ?
+                                                    'cursor-pointer' :
+                                                    'cursor-grab active:cursor-grabbing'
+                                                    } transition-all duration-200 ${selectedItem?.id === item.id ?
+                                                        'scale-110 ring-4 ring-blue-400 ring-offset-2 shadow-lg' :
+                                                        'hover:scale-105'
+                                                    }`}
                                             >
                                                 <Image
                                                     src={item.image}
@@ -289,18 +417,29 @@ export default function DuniaBentuk2(): JSX.Element {
                                 {shapeSlots.map((slot) => (
                                     <div
                                         key={slot.id}
-                                        onDragOver={handleDragOver}
-                                        onDrop={(e) => handleDrop(e, slot)}
-                                        className="relative w-36 h-32 flex items-center justify-center transition-all duration-200"
+                                        onDragOver={!isMobile ? handleDragOver : undefined}
+                                        onDrop={!isMobile ? (e) => handleDrop(e, slot) : undefined}
+                                        onClick={isMobile ? () => handleSlotClick(slot) : undefined}
+                                        className={`relative w-36 h-32 flex items-center justify-center transition-all duration-200 ${isMobile ? 'cursor-pointer' : ''
+                                            } ${isMobile && selectedItem ? 'hover:bg-blue-100 hover:scale-105' : ''
+                                            }`}
                                     >
                                         {droppedItems[slot.id] ? (
-                                            <Image
-                                                src={droppedItems[slot.id].image}
-                                                alt={droppedItems[slot.id].name}
-                                                width={150}
-                                                height={150}
-                                                className="object-contain"
-                                            />
+                                            <div
+                                                onClick={isMobile ? (e) => {
+                                                    e.stopPropagation();
+                                                    handleDroppedItemClick(droppedItems[slot.id], slot.id);
+                                                } : undefined}
+                                                className={isMobile ? 'cursor-pointer' : ''}
+                                            >
+                                                <Image
+                                                    src={droppedItems[slot.id].image}
+                                                    alt={droppedItems[slot.id].name}
+                                                    width={150}
+                                                    height={150}
+                                                    className="object-contain"
+                                                />
+                                            </div>
                                         ) : (
                                             <Image
                                                 src={slot.image}
