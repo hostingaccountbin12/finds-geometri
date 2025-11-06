@@ -98,6 +98,8 @@ export default function DuniaBentuk3(): JSX.Element {
 
     // Audio ref untuk kontrol audio
     const audioRef = useRef<HTMLAudioElement>(null);
+    const correctAudioRef = useRef<HTMLAudioElement>(null);
+    const wrongAudioRef = useRef<HTMLAudioElement>(null);
 
     // Function to check if device is mobile
     const checkDevice = (): void => {
@@ -144,6 +146,11 @@ export default function DuniaBentuk3(): JSX.Element {
         const newFeedback: Feedback = { ...feedback };
         newFeedback[slot.id] = isCorrect;
         setFeedback(newFeedback);
+
+        if (!isCorrect && wrongAudioRef.current) {
+            wrongAudioRef.current.currentTime = 0;
+            wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+        }
 
         // Update completed count
         const correctCount = Object.values(newFeedback).filter(Boolean).length;
@@ -209,6 +216,11 @@ export default function DuniaBentuk3(): JSX.Element {
         const newFeedback: Feedback = { ...feedback };
         newFeedback[slot.id] = isCorrect;
         setFeedback(newFeedback);
+
+        if (!isCorrect && wrongAudioRef.current) {
+            wrongAudioRef.current.currentTime = 0;
+            wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+        }
 
         // Update completed count
         const correctCount = Object.values(newFeedback).filter(Boolean).length;
@@ -306,6 +318,11 @@ export default function DuniaBentuk3(): JSX.Element {
         if (completedCount === 4) {
             setShowSuccess(true);
 
+            if (correctAudioRef.current) {
+                correctAudioRef.current.currentTime = 0;
+                correctAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+            }
+
             // Update level to 4 if current level is 3
             if (state.levelDuniaBentuk === 3) {
                 updateLevelDuniaBentuk(4);
@@ -333,6 +350,14 @@ export default function DuniaBentuk3(): JSX.Element {
                 preload="auto"
             >
                 <source src="/audio/Dunia bentuk Fige.m4a" type="audio/mp4" />
+            </audio>
+
+            <audio ref={correctAudioRef} preload="auto">
+                <source src="/audio/horee.mp3" type="audio/mpeg" />
+            </audio>
+
+            <audio ref={wrongAudioRef} preload="auto">
+                <source src="/audio/tetot.mp3" type="audio/mpeg" />
             </audio>
 
             {/* Home Button - Tombol Kembali */}
@@ -474,7 +499,7 @@ export default function DuniaBentuk3(): JSX.Element {
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
                     <div className="bg-white rounded-3xl p-12 text-center shadow-2xl border-8 border-green-500 max-w-md w-full mx-4">
                         <div className="text-8xl mb-6">🎉</div>
-                        <h2 className="text-6xl font-bold text-green-600 mb-4">Good Job!</h2>
+                        <h2 className="text-6xl font-bold text-green-600 mb-4">Kerja Bagus!</h2>
                         <p className="text-2xl text-gray-700 mb-6">
                             Kamu berhasil mencocokkan semua bentuk!
                         </p>

@@ -14,9 +14,9 @@ import Guling from "@/assets/icons/mini-games/mini-games-4/Guling.webp"
 import HiasanDinding from "@/assets/icons/mini-games/mini-games-4/HiasanDinding.webp"
 import Kasur from "@/assets/icons/mini-games/mini-games-4/Kasur.webp"
 import Kelereng from "@/assets/icons/mini-games/mini-games-4/Kelereng.webp"
-import LayangLayang from "@/assets/icons/mini-games/mini-games-4/LayangLayang.webp"
+import Penggaris from "@/assets/icons/mini-games/mini-games-4/Penggaris.webp"
 import Popit from "@/assets/icons/mini-games/mini-games-4/Popit.webp"
-import Telur from "@/assets/icons/mini-games/mini-games-4/Telur.webp"
+import Termos from "@/assets/icons/mini-games/mini-games-4/Termos.webp"
 
 // Interface untuk item game
 interface GameItem {
@@ -41,11 +41,11 @@ export default function MiniGames4(): JSX.Element {
         { id: 1, name: 'Bintang', shape: 'star', icon: Bintang, selected: false, matched: false },
         { id: 2, name: 'Kasur', shape: 'square', icon: Kasur, selected: false, matched: false },
         { id: 3, name: 'Pop It', shape: 'star', icon: Popit, selected: false, matched: false },
-        { id: 4, name: 'Telur', shape: 'oval', icon: Telur, selected: false, matched: false },
+        { id: 4, name: 'Termos', shape: 'oval', icon: Termos, selected: false, matched: false },
         { id: 5, name: 'Bantal', shape: 'square', icon: Bantal, selected: false, matched: false },
         { id: 6, name: 'Hiasan Dinding', shape: 'triangle', icon: HiasanDinding, selected: false, matched: false },
         { id: 7, name: 'Guling', shape: 'oval', icon: Guling, selected: false, matched: false },
-        { id: 8, name: 'Layang Layang', shape: 'triangle', icon: LayangLayang, selected: false, matched: false },
+        { id: 8, name: 'Penggaris', shape: 'triangle', icon: Penggaris, selected: false, matched: false },
         { id: 9, name: 'Bola', shape: 'circle', icon: Bola, selected: false, matched: false },
         { id: 10, name: 'Kelereng', shape: 'circle', icon: Kelereng, selected: false, matched: false }
     ];

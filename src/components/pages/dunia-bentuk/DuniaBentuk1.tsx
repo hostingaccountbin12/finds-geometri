@@ -15,7 +15,7 @@ import BoxStar from "@/assets/icons/dunia-bentuk/BoxStar.png"
 import Bintang from "@/assets/icons/dunia-bentuk/Bintang.png"
 import Cermin from "@/assets/icons/dunia-bentuk/Cermin.webp"
 import Jam from "@/assets/icons/dunia-bentuk/Jam.webp"
-import Sofa from "@/assets/icons/dunia-bentuk/Sofa.png"
+import PapanTulis from "@/assets/icons/dunia-bentuk/PapanTulis.gif"
 import { useGameState } from "@/context/GameContext";
 
 // Type definitions
@@ -46,9 +46,9 @@ interface Feedback {
 const gameData: GameItem[] = [
   {
     id: 1,
-    name: "sofa",
+    name: "papanTulis",
     shape: "rectangle",
-    image: Sofa,
+    image: PapanTulis,
     bgColor: "bg-blue-400"
   },
   {
@@ -97,6 +97,8 @@ export default function DuniaBentuk1(): JSX.Element {
 
   // Audio ref untuk kontrol audio
   const audioRef = useRef<HTMLAudioElement>(null);
+  const correctAudioRef = useRef<HTMLAudioElement>(null);
+  const wrongAudioRef = useRef<HTMLAudioElement>(null);
 
   // Function to check if device is mobile
   const checkDevice = (): void => {
@@ -143,6 +145,11 @@ export default function DuniaBentuk1(): JSX.Element {
     const newFeedback: Feedback = { ...feedback };
     newFeedback[slot.id] = isCorrect;
     setFeedback(newFeedback);
+
+    if (!isCorrect && wrongAudioRef.current) {
+      wrongAudioRef.current.currentTime = 0;
+      wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+    }
 
     // Update completed count
     const correctCount = Object.values(newFeedback).filter(Boolean).length;
@@ -208,6 +215,11 @@ export default function DuniaBentuk1(): JSX.Element {
     const newFeedback: Feedback = { ...feedback };
     newFeedback[slot.id] = isCorrect;
     setFeedback(newFeedback);
+
+    if (!isCorrect && wrongAudioRef.current) {
+      wrongAudioRef.current.currentTime = 0;
+      wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+    }
 
     // Update completed count
     const correctCount = Object.values(newFeedback).filter(Boolean).length;
@@ -305,6 +317,11 @@ export default function DuniaBentuk1(): JSX.Element {
     if (completedCount === 4) {
       setShowSuccess(true);
 
+      if (correctAudioRef.current) {
+        correctAudioRef.current.currentTime = 0;
+        correctAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+      }
+
       // Update level to 2 if current level is 1
       if (state.levelDuniaBentuk === 1) {
         updateLevelDuniaBentuk(2);
@@ -332,6 +349,14 @@ export default function DuniaBentuk1(): JSX.Element {
         preload="auto"
       >
         <source src="/audio/Dunia bentuk Fige.m4a" type="audio/mp4" />
+      </audio>
+
+      <audio ref={correctAudioRef} preload="auto">
+        <source src="/audio/horee.mp3" type="audio/mpeg" />
+      </audio>
+
+      <audio ref={wrongAudioRef} preload="auto">
+        <source src="/audio/tetot.mp3" type="audio/mpeg" />
       </audio>
 
       {/* Home Button - Tombol Kembali */}

@@ -15,8 +15,8 @@ import Eskrim from "@/assets/icons/mini-games/mini-games-1/Eskrim.webp"
 import Jam from "@/assets/icons/mini-games/mini-games-1/Jam.webp"
 import Pizza from "@/assets/icons/mini-games/mini-games-1/Pizza.webp"
 import Semangka from "@/assets/icons/mini-games/mini-games-1/Semangka.webp"
-import Sofa from "@/assets/icons/mini-games/mini-games-1/Sofa.png"
-import Toples from "@/assets/icons/mini-games/mini-games-1/Toples.webp"
+import PapanTulis from "@/assets/icons/mini-games/mini-games-1/PapanTulis.gif"
+import Telur from "@/assets/icons/mini-games/mini-games-1/Telur.webp"
 
 // Interface untuk item game
 interface GameItem {
@@ -46,8 +46,8 @@ export default function MiniGames1(): JSX.Element {
         { id: 3, name: 'Eskrim', shape: 'trapezoid', icon: Eskrim, selected: false, matched: false },
         { id: 4, name: 'Buku', shape: 'rectangle', icon: Buku, selected: false, matched: false },
         { id: 5, name: 'Atap', shape: 'trapezoid', icon: Atap, selected: false, matched: false },
-        { id: 6, name: 'Toples', shape: 'oval', icon: Toples, selected: false, matched: false },
-        { id: 7, name: 'Sofa', shape: 'rectangle', icon: Sofa, selected: false, matched: false },
+        { id: 6, name: 'Telur', shape: 'oval', icon: Telur, selected: false, matched: false },
+        { id: 7, name: 'PapanTulis', shape: 'rectangle', icon: PapanTulis, selected: false, matched: false },
         { id: 8, name: 'Pizza', shape: 'triangle', icon: Pizza, selected: false, matched: false },
         { id: 9, name: 'Cermin', shape: 'oval', icon: Cermin, selected: false, matched: false },
         { id: 10, name: 'Jam', shape: 'circle', icon: Jam, selected: false, matched: false }

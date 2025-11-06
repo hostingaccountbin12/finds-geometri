@@ -27,6 +27,9 @@ export default function MontirKecil1() {
     const [selectedShape, setSelectedShape] = useState<string | null>(null);
     const [hasPlayedInstructions, setHasPlayedInstructions] = useState<boolean>(false);
 
+    const correctAudioRef = React.useRef<HTMLAudioElement | null>(null);
+    const wrongAudioRef = React.useRef<HTMLAudioElement | null>(null);
+
     // Effect untuk auto-play audio instruksi saat komponen pertama kali dimount
     useEffect(() => {
         let isCancelled = false;
@@ -71,6 +74,28 @@ export default function MontirKecil1() {
         };
     }, []); // Empty dependency array agar hanya dijalankan sekali saat mount
 
+    // Effect untuk inisialisasi audio feedback
+    useEffect(() => {
+        correctAudioRef.current = new Audio('/audio/horee.mp3');
+        wrongAudioRef.current = new Audio('/audio/tetot.mp3');
+
+        // Set volume
+        if (correctAudioRef.current) correctAudioRef.current.volume = 0.9;
+        if (wrongAudioRef.current) wrongAudioRef.current.volume = 0.9;
+
+        // Cleanup
+        return () => {
+            if (correctAudioRef.current) {
+                correctAudioRef.current.pause();
+                correctAudioRef.current = null;
+            }
+            if (wrongAudioRef.current) {
+                wrongAudioRef.current.pause();
+                wrongAudioRef.current = null;
+            }
+        };
+    }, []);
+
     const handleBackToMenu = () => {
         navigateTo("menu-game");
     };
@@ -80,6 +105,11 @@ export default function MontirKecil1() {
 
         if (shape === 'circle') {
             setGameState('correct');
+
+            if (correctAudioRef.current) {
+                correctAudioRef.current.currentTime = 0;
+                correctAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+            }
             // Update level dan navigasi ke montir-kecil-2 setelah 2 detik
             setTimeout(() => {
                 updateLevelMontirKecil(2); // Update level ke 2
@@ -87,6 +117,11 @@ export default function MontirKecil1() {
             }, 2000);
         } else {
             setGameState('wrong');
+            
+            if (wrongAudioRef.current) {
+                wrongAudioRef.current.currentTime = 0;
+                wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+            }
             // Reset after 1.5 seconds
             setTimeout(() => {
                 setGameState('playing');

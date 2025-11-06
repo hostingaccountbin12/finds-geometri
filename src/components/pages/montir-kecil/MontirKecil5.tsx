@@ -27,50 +27,75 @@ export default function MontirKecil5() {
     const [selectedShape, setSelectedShape] = useState<string | null>(null);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
     const [hasPlayedInstructions, setHasPlayedInstructions] = useState<boolean>(false);
-    
-        // Effect untuk auto-play audio instruksi saat komponen pertama kali dimount
-        useEffect(() => {
-            let isCancelled = false;
-            let currentAudio: HTMLAudioElement | null = null;
-    
-            const playInstructions = async () => {
-                if (!hasPlayedInstructions && !isCancelled) {
-                    // Delay sedikit untuk memastikan komponen sudah fully loaded
-                    setTimeout(async () => {
-                        if (!isCancelled && !hasPlayedInstructions) {
-                            try {
-                                currentAudio = new Audio('/audio/Montir kecil sepeda.m4a');
-                                currentAudio.volume = 1;
-                                currentAudio.preload = 'auto';
-    
-                                const playPromise = currentAudio.play();
-                                if (playPromise !== undefined) {
-                                    await playPromise;
-                                    console.log('Audio instruksi berhasil diputar');
-                                    if (!isCancelled) {
-                                        setHasPlayedInstructions(true);
-                                    }
+
+    const correctAudioRef = React.useRef<HTMLAudioElement | null>(null);
+    const wrongAudioRef = React.useRef<HTMLAudioElement | null>(null);
+
+    // Effect untuk auto-play audio instruksi saat komponen pertama kali dimount
+    useEffect(() => {
+        let isCancelled = false;
+        let currentAudio: HTMLAudioElement | null = null;
+
+        const playInstructions = async () => {
+            if (!hasPlayedInstructions && !isCancelled) {
+                // Delay sedikit untuk memastikan komponen sudah fully loaded
+                setTimeout(async () => {
+                    if (!isCancelled && !hasPlayedInstructions) {
+                        try {
+                            currentAudio = new Audio('/audio/Montir kecil sepeda.m4a');
+                            currentAudio.volume = 1;
+                            currentAudio.preload = 'auto';
+
+                            const playPromise = currentAudio.play();
+                            if (playPromise !== undefined) {
+                                await playPromise;
+                                console.log('Audio instruksi berhasil diputar');
+                                if (!isCancelled) {
+                                    setHasPlayedInstructions(true);
                                 }
-                            } catch (error) {
-                                console.log('Auto-play audio diblokir atau gagal:', error);
                             }
+                        } catch (error) {
+                            console.log('Auto-play audio diblokir atau gagal:', error);
                         }
-                    }, 1000);
-                }
-            };
-    
-            playInstructions();
-    
-            // Cleanup function untuk mencegah memory leak dan double play
-            return () => {
-                isCancelled = true;
-                if (currentAudio) {
-                    currentAudio.pause();
-                    currentAudio.currentTime = 0;
-                    currentAudio = null;
-                }
-            };
-        }, []); // Empty dependency array agar hanya dijalankan sekali saat mount
+                    }
+                }, 1000);
+            }
+        };
+
+        playInstructions();
+
+        // Cleanup function untuk mencegah memory leak dan double play
+        return () => {
+            isCancelled = true;
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+        };
+    }, []); // Empty dependency array agar hanya dijalankan sekali saat mount
+
+    // Effect untuk inisialisasi audio feedback
+    useEffect(() => {
+        correctAudioRef.current = new Audio('/audio/horee.mp3');
+        wrongAudioRef.current = new Audio('/audio/tetot.mp3');
+
+        // Set volume
+        if (correctAudioRef.current) correctAudioRef.current.volume = 0.9;
+        if (wrongAudioRef.current) wrongAudioRef.current.volume = 0.9;
+
+        // Cleanup
+        return () => {
+            if (correctAudioRef.current) {
+                correctAudioRef.current.pause();
+                correctAudioRef.current = null;
+            }
+            if (wrongAudioRef.current) {
+                wrongAudioRef.current.pause();
+                wrongAudioRef.current = null;
+            }
+        };
+    }, []);
 
     const handleBackToMenu = () => {
         navigateTo("menu-game");
@@ -81,12 +106,25 @@ export default function MontirKecil5() {
 
         if (shape === 'square') {
             setGameState('correct');
+
+            if (correctAudioRef.current) {
+                correctAudioRef.current.currentTime = 0;
+                correctAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+            }
+
             // Tampilkan pop-up setelah 2 detik
             setTimeout(() => {
                 setShowSuccess(true);
             }, 2000);
         } else {
             setGameState('wrong');
+
+            if (wrongAudioRef.current) {
+                wrongAudioRef.current.currentTime = 0;
+                wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+            }
+
+
             // Reset after 1.5 seconds
             setTimeout(() => {
                 setGameState('playing');

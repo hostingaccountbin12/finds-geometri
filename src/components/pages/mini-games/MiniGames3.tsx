@@ -9,12 +9,12 @@ import { useGameState } from "@/context/GameContext";
 
 import Balon from "@/assets/icons/mini-games/mini-games-3/Balon.webp"
 import Globe from "@/assets/icons/mini-games/mini-games-3/Globe.webp"
-import Kaleng from "@/assets/icons/mini-games/mini-games-3/Kaleng.webp"
+import Bulan from "@/assets/icons/mini-games/mini-games-3/Bulan.webp"
 import Koper from "@/assets/icons/mini-games/mini-games-3/Koper.webp"
 import Kue from "@/assets/icons/mini-games/mini-games-3/Kue.webp"
 import Mainan from "@/assets/icons/mini-games/mini-games-3/Mainan.webp"
-import Sepatu from "@/assets/icons/mini-games/mini-games-3/Sepatu.webp"
-import Tas from "@/assets/icons/mini-games/mini-games-3/Tas.webp"
+import Lampu from "@/assets/icons/mini-games/mini-games-3/Lampu.webp"
+import P3K from "@/assets/icons/mini-games/mini-games-3/P3K.webp"
 import TempatPensil from "@/assets/icons/mini-games/mini-games-3/TempatPensil.webp"
 import Toples from "@/assets/icons/mini-games/mini-games-3/Toples.webp"
 
@@ -41,12 +41,12 @@ export default function MiniGames3(): JSX.Element {
         { id: 1, name: 'Tempat Pensil', shape: 'oval', icon: TempatPensil, selected: false, matched: false },
         { id: 2, name: 'Kue', shape: 'triangle', icon: Kue, selected: false, matched: false },
         { id: 3, name: 'Koper', shape: 'rectangle', icon: Koper, selected: false, matched: false },
-        { id: 4, name: 'Sepatu', shape: 'circle', icon: Sepatu, selected: false, matched: false },
+        { id: 4, name: 'Lampu', shape: 'circle', icon: Lampu, selected: false, matched: false },
         { id: 5, name: 'Globe', shape: 'cylinder', icon: Globe, selected: false, matched: false },
         { id: 6, name: 'Toples', shape: 'oval', icon: Toples, selected: false, matched: false },
-        { id: 7, name: 'Kaleng', shape: 'cylinder', icon: Kaleng, selected: false, matched: false },
+        { id: 7, name: 'Bulan', shape: 'cylinder', icon: Bulan, selected: false, matched: false },
         { id: 8, name: 'Mainan', shape: 'triangle', icon: Mainan, selected: false, matched: false },
-        { id: 9, name: 'Tas', shape: 'rectangle', icon: Tas, selected: false, matched: false },
+        { id: 9, name: 'P3K', shape: 'rectangle', icon: P3K, selected: false, matched: false },
         { id: 10, name: 'Balon', shape: 'circle', icon: Balon, selected: false, matched: false }
     ];
 

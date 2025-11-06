@@ -15,7 +15,7 @@ import BoxSendal from "@/assets/icons/dunia-bentuk/dunia-bentuk-4/BoxSendal.png"
 import Basket from "@/assets/icons/dunia-bentuk/dunia-bentuk-4/Basket.png"
 import CerminLove from "@/assets/icons/dunia-bentuk/dunia-bentuk-4/CerminLove.webp"
 import Rumah from "@/assets/icons/dunia-bentuk/dunia-bentuk-4/Rumah.png"
-import Sendal from "@/assets/icons/dunia-bentuk/dunia-bentuk-4/Sendal.png"
+import Telur from "@/assets/icons/dunia-bentuk/dunia-bentuk-4/Telur.webp"
 
 import { useGameState } from "@/context/GameContext";
 
@@ -68,9 +68,9 @@ const gameData: GameItem[] = [
     },
     {
         id: 4,
-        name: "sendal",
+        name: "Telur",
         shape: "oval",
-        image: Sendal,
+        image: Telur,
         bgColor: "bg-white"
     }
 ];
@@ -98,6 +98,8 @@ export default function DuniaBentuk4(): JSX.Element {
 
     // Audio ref untuk kontrol audio
     const audioRef = useRef<HTMLAudioElement>(null);
+    const correctAudioRef = useRef<HTMLAudioElement>(null);
+    const wrongAudioRef = useRef<HTMLAudioElement>(null);
 
     // Function to check if device is mobile
     const checkDevice = (): void => {
@@ -144,6 +146,11 @@ export default function DuniaBentuk4(): JSX.Element {
         const newFeedback: Feedback = { ...feedback };
         newFeedback[slot.id] = isCorrect;
         setFeedback(newFeedback);
+
+        if (!isCorrect && wrongAudioRef.current) {
+            wrongAudioRef.current.currentTime = 0;
+            wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+        }
 
         // Update completed count
         const correctCount = Object.values(newFeedback).filter(Boolean).length;
@@ -209,6 +216,11 @@ export default function DuniaBentuk4(): JSX.Element {
         const newFeedback: Feedback = { ...feedback };
         newFeedback[slot.id] = isCorrect;
         setFeedback(newFeedback);
+
+        if (!isCorrect && wrongAudioRef.current) {
+            wrongAudioRef.current.currentTime = 0;
+            wrongAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+        }
 
         // Update completed count
         const correctCount = Object.values(newFeedback).filter(Boolean).length;
@@ -306,6 +318,12 @@ export default function DuniaBentuk4(): JSX.Element {
         if (completedCount === 4) {
             setShowSuccess(true);
 
+            if (correctAudioRef.current) {
+                correctAudioRef.current.currentTime = 0;
+                correctAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+            }
+
+
             // Update level to 5 if current level is 4
             if (state.levelDuniaBentuk === 4) {
                 updateLevelDuniaBentuk(5);
@@ -333,6 +351,14 @@ export default function DuniaBentuk4(): JSX.Element {
                 preload="auto"
             >
                 <source src="/audio/Dunia bentuk Fige.m4a" type="audio/mp4" />
+            </audio>
+
+            <audio ref={correctAudioRef} preload="auto">
+                <source src="/audio/horee.mp3" type="audio/mpeg" />
+            </audio>
+
+            <audio ref={wrongAudioRef} preload="auto">
+                <source src="/audio/tetot.mp3" type="audio/mpeg" />
             </audio>
 
             {/* Home Button - Tombol Kembali */}
@@ -381,7 +407,7 @@ export default function DuniaBentuk4(): JSX.Element {
                                 return (
                                     <div
                                         key={item.id}
-                                        className="w-36 h-44 flex items-center justify-center"
+                                        className="w-32 h-44 flex items-center justify-center"
                                     >
                                         {!isCorrectlyPlaced && (
                                             <div
@@ -399,8 +425,8 @@ export default function DuniaBentuk4(): JSX.Element {
                                                 <Image
                                                     src={item.image}
                                                     alt={item.name}
-                                                    width={180}
-                                                    height={180}
+                                                    width={160}
+                                                    height={160}
                                                     className="object-contain"
                                                 />
                                             </div>
@@ -421,7 +447,7 @@ export default function DuniaBentuk4(): JSX.Element {
                                         onDragOver={!isMobile ? handleDragOver : undefined}
                                         onDrop={!isMobile ? (e) => handleDrop(e, slot) : undefined}
                                         onClick={isMobile ? () => handleSlotClick(slot) : undefined}
-                                        className={`relative w-32 h-36 flex items-center justify-center transition-all duration-200 ${isMobile ? 'cursor-pointer' : ''
+                                        className={`relative w-28 h-36 flex items-center justify-center transition-all duration-200 ${isMobile ? 'cursor-pointer' : ''
                                             } ${isMobile && selectedItem ? 'hover:bg-blue-100 hover:scale-105' : ''
                                             }`}
                                     >
